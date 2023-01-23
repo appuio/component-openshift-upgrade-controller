@@ -1,0 +1,25 @@
+{
+  "template": "https://github.com/projectsyn/commodore-component-template.git",
+  "commit": "804e9c72df5f0507e18de8a374fc35b694b6fb08",
+  "checkout": "main",
+  "context": {
+    "cookiecutter": {
+      "name": "ocp-drain-monitor",
+      "slug": "ocp-drain-monitor",
+      "parameter_key": "ocp_drain_monitor",
+      "test_cases": "defaults",
+      "add_lib": "n",
+      "add_pp": "n",
+      "add_golden": "y",
+      "add_matrix": "y",
+      "add_go_unit": "n",
+      "copyright_holder": "VSHN AG <info@vshn.ch>",
+      "copyright_year": "2023",
+      "github_owner": "appuio",
+      "github_name": "component-ocp-drain-monitor",
+      "github_url": "https://github.com/appuio/component-ocp-drain-monitor",
+      "_template": "https://github.com/projectsyn/commodore-component-template.git"
+    }
+  },
+  "directory": null
+}

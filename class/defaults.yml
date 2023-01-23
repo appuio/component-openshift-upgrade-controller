@@ -1,0 +1,4 @@
+parameters:
+  ocp_drain_monitor:
+    =_metadata: {}
+    namespace: syn-ocp-drain-monitor

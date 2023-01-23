@@ -1,0 +1,6 @@
+name: ocp-drain-monitor
+title: ocp-drain-monitor
+version: master
+start_page: ROOT:index.adoc
+nav:
+  - modules/ROOT/partials/nav.adoc

@@ -1,0 +1,5 @@
+= ocp-drain-monitor
+
+ocp-drain-monitor is a Commodore component to manage ocp-drain-monitor.
+
+See the xref:references/parameters.adoc[parameters] reference for further details.
