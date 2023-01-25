@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations: {}
+  labels:
+    name: ocp-drain-monitor
+  name: ocp-drain-monitor
+  namespace: syn-ocp-drain-monitor
+spec:
+  groups:
+    - name: drain.alerts
+      rules:
+        - alert: NodeDrainStuck
+          annotations:
+            description: Node {{$labels.node}} is draining for more than 10 minutes.
+            message: Node {{$labels.node}} is draining for more than 10 minutes.
+            runbook_url: https://hub.syn.tools/ocp-drain-monitor/runbooks/NodeDrainStuck.html
+            summary: Node is draining for more than 10 minutes.
+          expr: 'ocp_drain_monitor_node_draining == 1
+
+            '
+          for: 10m
+          labels:
+            severity: warning
+            syn: 'true'
+            syn_component: ocp-drain-monitor

@@ -11,9 +11,80 @@ default:: `syn-ocp-drain-monitor`
 The namespace in which to deploy this component.
 
 
-== Example
+== `namespaceMetadata`
 
+[horizontal]
+type:: dict
+default::
++
 [source,yaml]
 ----
-namespace: example-namespace
+annotations:
+  openshift.io/node-selector: "node-role.kubernetes.io/infra="
+labels:
+  openshift.io/cluster-monitoring: "true"
 ----
+
+Metadata to be added to the namespace.
+
+
+== `images`
+
+[horizontal]
+type:: dictionary
+
+The images to use for this component.
+
+
+== `manifests_version`
+
+[horizontal]
+type:: string
+default:: `${ocp_drain_monitor:images:ocp_drain_monitor_controller:tag}`
+
+The Git reference to the controller deployment manifests.
+The default is the tag of the controller image.
+
+
+== `alerts`
+
+[horizontal]
+type:: dict
+example::
++
+[source,yaml]
+----
+BadThingsHappening:
+  enabled: true
+  rule:
+    annotations:
+      description: Bad things have been happening on {{$labels.node}} for more than 10 minutes.
+      message: Bad things have been happening on {{$labels.node}} for more than 10 minutes.
+      runbook_url: https://hub.syn.tools/ocp-drain-monitor/runbooks/BadThingsHappening.html
+    expr: |
+      bad_thing_happening == 1
+    for: 10m
+    labels:
+      severity: warning
+----
+
+`alerts` defines the alerts to be installed.
+The dictionary key is used as the name of the alert.
+
+
+=== `alerts.<name>.enabled`
+
+[horizontal]
+type:: bool
+
+Defines whether to install the alert.
+
+
+=== `alerts.<name>.rule`
+
+[horizontal]
+type:: dict
+
+Holds the configuration of the alert rule.
+
+See https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/[Prometheus Alerting Rules] for details.

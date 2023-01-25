@@ -2,3 +2,38 @@ parameters:
   ocp_drain_monitor:
     =_metadata: {}
     namespace: syn-ocp-drain-monitor
+    namespaceMetadata:
+      annotations:
+        openshift.io/node-selector: "node-role.kubernetes.io/infra="
+      labels:
+        openshift.io/cluster-monitoring: "true"
+
+    images:
+      ocp_drain_monitor_controller:
+        registry: ghcr.io
+        image: appuio/ocp-drain-monitor
+        tag: v0.1.2
+      kube_rbac_proxy:
+        registry: gcr.io
+        image: kubebuilder/kube-rbac-proxy
+        tag: v0.13.1
+
+    manifests_version: ${ocp_drain_monitor:images:ocp_drain_monitor_controller:tag}
+
+    kustomize_input:
+      namespace: ${ocp_drain_monitor:namespace}
+
+    alerts:
+      NodeDrainStuck:
+        enabled: true
+        rule:
+          annotations:
+            description: Node {{$labels.node}} is draining for more than 10 minutes.
+            message: Node {{$labels.node}} is draining for more than 10 minutes.
+            runbook_url: https://hub.syn.tools/ocp-drain-monitor/runbooks/NodeDrainStuck.html
+            summary: Node is draining for more than 10 minutes.
+          expr: |
+            ocp_drain_monitor_node_draining == 1
+          for: 10m
+          labels:
+            severity: warning

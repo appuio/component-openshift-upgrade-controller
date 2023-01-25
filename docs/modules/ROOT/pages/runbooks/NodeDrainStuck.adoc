@@ -1,0 +1,71 @@
+= NodeDrainStuck
+
+include::partial$runbooks/contribution_note.adoc[]
+
+== icon:glasses[] Overview
+
+This alert fires when a node is stuck in the drain process for more than the set amount of time.
+Default is 10 minutes.
+
+This can hold up the maintenance process and delay the upgrade of the cluster.
+
+== icon:bug[] Steps for debugging
+
+Nodes usually get stuck in the drain process when there is a pod that isn't evictable.
+This can be caused by a (rogue) `PodDisruptionBudget`, pods on new nodes not entering a `Ready` state, or extremely long `terminationGracePeriodSeconds` among other things.
+
+=== icon:search[] Check operator logs
+
+The drain process on OpenShift is initiated by the `machine-config-operator`.
+The operator logs reasons for why a node isn't draining.
+You can find these logs by running the following command:
+
+[source,shell]
+----
+kubectl -n openshift-machine-config-operator logs deployments/machine-config-controller
+----
+
+Look out for messages like the following:
+
+[source]
+----
+E0116 14:26:30.051014       1 drain_controller.go:110] error when evicting pods/"apiserver-786c87d87d-9lkxw" -n "openshift-oauth-apiserver" (will retry after 5s): Cannot evict pod as it would violate the pod's disruption budget.
+----
+
+[NOTE]
+====
+Add the `PodDisruptionBudget` found to cause the issue to the maintenance log.
+
+Create a customer ticket to get the `PodDisruptionBudget` fixed if possible.
+====
+
+=== icon:search[] Check pods on node
+
+You can list the pods on the node by running the following command:
+
+[source,shell]
+----
+kubectl get pods --all-namespaces --field-selector spec.nodeName=$NODE_NAME
+----
+
+Check for pods (for example database pods) that might lead to data loss if evicted.
+
+=== icon:gears[] Force drain the node
+
+If the node is stuck in the drain process for a long time, you can force the drain by running the following command:
+
+[source,shell]
+----
+kubectl drain --force --ignore-daemonsets --delete-emptydir-data --grace-period=30 $NODE_NAME
+----
+
+[CAUTION]
+====
+This can lead to data loss depending on the application.
+Check pods left on node first.
+====
+
+== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too early you may want to tune the time until the alert fires.
+You can do this by changing the `for` parameter in the `NodeDrainStuck` alert configuration.
