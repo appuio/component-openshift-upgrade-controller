@@ -37,3 +37,4 @@ parameters:
           for: 10m
           labels:
             severity: warning
+            Maintenance: "true"

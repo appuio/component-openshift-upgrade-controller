@@ -21,6 +21,7 @@ spec:
             '
           for: 10m
           labels:
+            Maintenance: 'true'
             severity: warning
             syn: 'true'
             syn_component: ocp-drain-monitor
