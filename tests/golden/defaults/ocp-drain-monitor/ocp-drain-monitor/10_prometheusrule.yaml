@@ -16,9 +16,8 @@ spec:
             message: Node {{$labels.node}} is draining for more than 10 minutes.
             runbook_url: https://hub.syn.tools/ocp-drain-monitor/runbooks/NodeDrainStuck.html
             summary: Node is draining for more than 10 minutes.
-          expr: 'ocp_drain_monitor_node_draining == 1
-
-            '
+          expr: |
+            ocp_drain_monitor_node_draining == 1
           for: 10m
           labels:
             Maintenance: 'true'
