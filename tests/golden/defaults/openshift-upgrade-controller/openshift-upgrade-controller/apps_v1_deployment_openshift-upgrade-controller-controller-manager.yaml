@@ -3,14 +3,14 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/component: manager
-    app.kubernetes.io/created-by: ocp-drain-monitor
+    app.kubernetes.io/created-by: openshift-upgrade-controller
     app.kubernetes.io/instance: controller-manager
     app.kubernetes.io/managed-by: commodore
     app.kubernetes.io/name: deployment
-    app.kubernetes.io/part-of: ocp-drain-monitor
+    app.kubernetes.io/part-of: openshift-upgrade-controller
     control-plane: controller-manager
-  name: ocp-drain-monitor-controller-manager
-  namespace: syn-ocp-drain-monitor
+  name: openshift-upgrade-controller-controller-manager
+  namespace: appuio-openshift-upgrade-controller
 spec:
   replicas: 1
   selector:
@@ -67,7 +67,12 @@ spec:
         - --health-probe-bind-address=:8081
         - --metrics-bind-address=127.0.0.1:8080
         - --leader-elect
-        image: ghcr.io/appuio/ocp-drain-monitor:v0.1.2
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ghcr.io/appuio/openshift-upgrade-controller:v0.1.0-dev1
         livenessProbe:
           httpGet:
             path: /healthz
@@ -97,5 +102,5 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
-      serviceAccountName: ocp-drain-monitor-controller-manager
+      serviceAccountName: openshift-upgrade-controller-controller-manager
       terminationGracePeriodSeconds: 10

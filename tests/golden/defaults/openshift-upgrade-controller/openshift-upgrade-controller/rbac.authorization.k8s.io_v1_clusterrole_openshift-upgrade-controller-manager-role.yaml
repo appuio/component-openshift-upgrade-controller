@@ -1,0 +1,101 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: commodore
+  name: openshift-upgrade-controller-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - config.openshift.io
+  resources:
+  - clusterversions
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - clusterversions
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - clusterversions/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - clusterversions/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradeconfigs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradeconfigs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradeconfigs/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradejobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradejobs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradejobs/status
+  verbs:
+  - get
+  - patch
+  - update

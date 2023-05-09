@@ -5,11 +5,11 @@ metadata:
     openshift.io/node-selector: node-role.kubernetes.io/infra=
   labels:
     app.kubernetes.io/component: manager
-    app.kubernetes.io/created-by: ocp-drain-monitor
+    app.kubernetes.io/created-by: openshift-upgrade-controller
     app.kubernetes.io/instance: system
     app.kubernetes.io/managed-by: commodore
     app.kubernetes.io/name: namespace
-    app.kubernetes.io/part-of: ocp-drain-monitor
+    app.kubernetes.io/part-of: openshift-upgrade-controller
     control-plane: controller-manager
     openshift.io/cluster-monitoring: "true"
-  name: syn-ocp-drain-monitor
+  name: appuio-openshift-upgrade-controller

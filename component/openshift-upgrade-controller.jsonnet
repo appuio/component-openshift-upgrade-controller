@@ -7,9 +7,9 @@ local slo = import 'slos.libsonnet';
 
 local inv = kap.inventory();
 // The hiera parameters for the component
-local params = inv.parameters.ocp_drain_monitor;
+local params = inv.parameters.openshift_upgrade_controller;
 
-local upstreamNamespace = 'ocp-drain-monitor-system';
+local upstreamNamespace = 'openshift-upgrade-controller-system';
 
 local removeUpstreamNamespace = kube.Namespace(upstreamNamespace) {
   metadata: {
@@ -22,11 +22,11 @@ local patch = function(p) {
 };
 
 com.Kustomization(
-  'https://github.com/appuio/ocp-drain-monitor//config/default',
+  'https://github.com/appuio/openshift-upgrade-controller//config/default',
   params.manifests_version,
   {
-    'ghcr.io/appuio/ocp-drain-monitor': {
-      local image = params.images.ocp_drain_monitor_controller,
+    'ghcr.io/appuio/openshift-upgrade-controller': {
+      local image = params.images.openshift_upgrade_controller,
       newTag: image.tag,
       newName: '%(registry)s/%(image)s' % image,
     },

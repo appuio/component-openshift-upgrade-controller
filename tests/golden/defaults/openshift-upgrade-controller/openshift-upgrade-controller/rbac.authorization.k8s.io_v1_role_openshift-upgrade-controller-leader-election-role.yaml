@@ -3,13 +3,13 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: ocp-drain-monitor
+    app.kubernetes.io/created-by: openshift-upgrade-controller
     app.kubernetes.io/instance: leader-election-role
     app.kubernetes.io/managed-by: commodore
     app.kubernetes.io/name: role
-    app.kubernetes.io/part-of: ocp-drain-monitor
-  name: ocp-drain-monitor-leader-election-role
-  namespace: syn-ocp-drain-monitor
+    app.kubernetes.io/part-of: openshift-upgrade-controller
+  name: openshift-upgrade-controller-leader-election-role
+  namespace: appuio-openshift-upgrade-controller
 rules:
 - apiGroups:
   - ""

@@ -1,13 +1,13 @@
-# Commodore Component: ocp-drain-monitor
+# Commodore Component: openshift-upgrade-controller
 
-This is a [Commodore][commodore] Component for ocp-drain-monitor.
+This is a [Commodore][commodore] Component for openshift-upgrade-controller.
 
 This repository is part of Project Syn.
 For documentation on Project Syn and this component, see https://syn.tools.
 
 ## Documentation
 
-The rendered documentation for this component is available on the [Commodore Components Hub](https://hub.syn.tools/ocp-drain-monitor).
+The rendered documentation for this component is available on the [Commodore Components Hub](https://hub.syn.tools/openshift-upgrade-controller).
 
 Documentation for this component is written using [Asciidoc][asciidoc] and [Antora][antora].
 It is located in the [docs/](docs) folder.

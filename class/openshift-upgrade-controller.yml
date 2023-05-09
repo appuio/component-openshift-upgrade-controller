@@ -8,24 +8,24 @@ parameters:
       - input_paths:
           - ${_base_directory}/component/main.jsonnet
         input_type: jsonnet
-        output_path: ocp-drain-monitor/
+        output_path: openshift-upgrade-controller/
 
       - input_paths:
-          - ${_base_directory}/component/ocp-drain-monitor.jsonnet
+          - ${_base_directory}/component/openshift-upgrade-controller.jsonnet
         input_type: jsonnet
-        output_path: ${_base_directory}/ocp-drain-monitor
+        output_path: ${_base_directory}/openshift-upgrade-controller
         output_type: yaml
       - input_type: external
         output_path: .
         input_paths:
           - ${_kustomize_wrapper}
         env_vars:
-          INPUT_DIR: ${_base_directory}/ocp-drain-monitor
+          INPUT_DIR: ${_base_directory}/openshift-upgrade-controller
         args:
-          - \${compiled_target_dir}/ocp-drain-monitor
+          - \${compiled_target_dir}/openshift-upgrade-controller
 
       # Cleanup
       - input_paths:
-          - ${_base_directory}/ocp-drain-monitor
+          - ${_base_directory}/openshift-upgrade-controller
         input_type: remove
         output_path: .

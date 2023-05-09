@@ -1,10 +1,10 @@
 local kap = import 'lib/kapitan.libjsonnet';
 local inv = kap.inventory();
-local params = inv.parameters.ocp_drain_monitor;
+local params = inv.parameters.openshift_upgrade_controller;
 local argocd = import 'lib/argocd.libjsonnet';
 
-local app = argocd.App('ocp-drain-monitor', params.namespace);
+local app = argocd.App('openshift-upgrade-controller', params.namespace);
 
 {
-  'ocp-drain-monitor': app,
+  'openshift-upgrade-controller': app,
 }

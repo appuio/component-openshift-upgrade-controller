@@ -1,5 +1,5 @@
-name: ocp-drain-monitor
-title: ocp-drain-monitor
+name: openshift-upgrade-controller
+title: openshift-upgrade-controller
 version: master
 start_page: ROOT:index.adoc
 nav:

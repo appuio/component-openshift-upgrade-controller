@@ -1,5 +1,5 @@
 # The component name is hard-coded from the template
-COMPONENT_NAME ?= ocp-drain-monitor
+COMPONENT_NAME ?= openshift-upgrade-controller
 
 git_dir         ?= $(shell git rev-parse --git-common-dir)
 compiled_path   ?= compiled/$(COMPONENT_NAME)/$(COMPONENT_NAME)

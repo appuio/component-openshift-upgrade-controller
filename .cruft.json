@@ -4,9 +4,9 @@
   "checkout": "main",
   "context": {
     "cookiecutter": {
-      "name": "ocp-drain-monitor",
-      "slug": "ocp-drain-monitor",
-      "parameter_key": "ocp_drain_monitor",
+      "name": "openshift-upgrade-controller",
+      "slug": "openshift-upgrade-controller",
+      "parameter_key": "openshift_upgrade_controller",
       "test_cases": "defaults",
       "add_lib": "n",
       "add_pp": "n",
@@ -16,8 +16,8 @@
       "copyright_holder": "VSHN AG <info@vshn.ch>",
       "copyright_year": "2023",
       "github_owner": "appuio",
-      "github_name": "component-ocp-drain-monitor",
-      "github_url": "https://github.com/appuio/component-ocp-drain-monitor",
+      "github_name": "component-openshift-upgrade-controller",
+      "github_url": "https://github.com/appuio/component-openshift-upgrade-controller",
       "_template": "https://github.com/projectsyn/commodore-component-template.git"
     }
   },
