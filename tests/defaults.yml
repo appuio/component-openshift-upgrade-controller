@@ -1,3 +1,10 @@
-# Overwrite parameters here
-
-# parameters: {...}
+parameters:
+  openshift_upgrade_controller:
+    cluster_version:
+      spec:
+        clusterID: 5cc27d6c-569f-430c-a74a-cf0d9aebf348
+        desiredUpdate:
+          image: >-
+            quay.io/openshift-release-dev/ocp-release@sha256:4f6089b62f54887ecc14684fafbe235a12f9d0c6b77379dee6ccc3675de6ed6d
+          version: 4.11.38
+        upstream: 'https://api.openshift.com/api/upgrades_info/v1/graph'

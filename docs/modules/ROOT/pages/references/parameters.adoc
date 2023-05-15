@@ -89,6 +89,9 @@ We recommend that users set `spec.clusterID` to a non-component parameter such a
 
 Values specified in this parameter take precedence over default values derived from parameter `openshiftVersion`.
 
+The `desiredUpdate` field is removed from the `ClusterVersion` object.
+The desired update is determined by the controller based on the `UpgradeConfig` and upstream `ClusterVersion` objects.
+
 
 === Example
 
