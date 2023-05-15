@@ -16,7 +16,7 @@ spec:
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     metricRelabelings:
     - action: keep
-      regex: ocp_drain_monitor_.+
+      regex: openshift_upgrade_controller_.+
       sourceLabels:
       - __name__
     path: /metrics
