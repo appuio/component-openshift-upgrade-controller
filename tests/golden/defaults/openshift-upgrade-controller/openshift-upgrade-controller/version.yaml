@@ -1,0 +1,12 @@
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: ClusterVersion
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    name: version
+  name: version
+  namespace: openshift-cluster-version
+spec:
+  channel: stable-4.8
+  upstream: https://api.openshift.com/api/upgrades_info/v1/graph

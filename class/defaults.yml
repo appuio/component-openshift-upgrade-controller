@@ -23,6 +23,13 @@ parameters:
     kustomize_input:
       namespace: ${openshift_upgrade_controller:namespace}
 
+    cluster_version:
+      openshiftVersion:
+        Major: "4"
+        Minor: "8"
+      spec:
+        upstream: https://api.openshift.com/api/upgrades_info/v1/graph
+
     alerts:
       NodeDrainStuck:
         enabled: true
