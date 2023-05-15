@@ -16,7 +16,7 @@ parameters:
       kube_rbac_proxy:
         registry: gcr.io
         image: kubebuilder/kube-rbac-proxy
-        tag: v0.13.1
+        tag: v0.14.1
 
     manifests_version: ${openshift_upgrade_controller:images:openshift_upgrade_controller:tag}
 
