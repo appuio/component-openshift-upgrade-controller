@@ -26,7 +26,7 @@ parameters:
     cluster_version:
       openshiftVersion:
         Major: "4"
-        Minor: "8"
+        Minor: "11"
       spec:
         upstream: https://api.openshift.com/api/upgrades_info/v1/graph
 
