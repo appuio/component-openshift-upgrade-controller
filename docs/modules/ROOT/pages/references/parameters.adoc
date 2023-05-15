@@ -46,6 +46,40 @@ The Git reference to the controller deployment manifests.
 The default is the tag of the controller image.
 
 
+== upgrade_configs
+
+[horizontal]
+type:: dict
+default:: `{}`
+example::
++
+[source,yaml]
+----
+upgrade_configs:
+  monday-afternoon:
+    spec:
+      maxSchedulingDelay: 1h
+      maxUpgradeStartDelay: 1h
+      schedule:
+        cron: "0 10 * * 2"
+        location: Europe/Zurich
+      jobTemplate:
+        spec:
+          config:
+            upgradeTimeout: 12h
+            preUpgradeHealthChecks:
+              timeout: 1h
+            postUpgradeHealthChecks:
+              timeout: 1h
+----
+
+This parameter is used to configure the `UpgradeConfig` objects.
+The dictionary key is used as the name of the `UpgradeConfig` object.
+The value is the configuration of the `UpgradeConfig` object.
+
+See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
+
+
 == `cluster_version.openshiftVersion`
 
 [horizontal]

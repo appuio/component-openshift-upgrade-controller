@@ -1,0 +1,22 @@
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeConfig
+metadata:
+  annotations: {}
+  labels:
+    name: appuio-monday-afternoon
+  name: appuio-monday-afternoon
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  jobTemplate:
+    spec:
+      config:
+        postUpgradeHealthChecks:
+          timeout: 1h
+        preUpgradeHealthChecks:
+          timeout: 1h
+        upgradeTimeout: 12h
+  maxSchedulingDelay: 1h
+  maxUpgradeStartDelay: 1h
+  schedule:
+    cron: 0 10 * * 2
+    location: Europe/Zurich

@@ -23,6 +23,8 @@ parameters:
     kustomize_input:
       namespace: ${openshift_upgrade_controller:namespace}
 
+    upgrade_configs: {}
+
     cluster_version:
       openshiftVersion:
         Major: "4"

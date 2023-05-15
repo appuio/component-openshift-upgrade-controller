@@ -31,6 +31,16 @@ local alerts = function(name, groupName, alerts)
     },
   });
 
+local upgradeConfigs = com.generateResources(
+  params.upgrade_configs,
+  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeConfig', name) {
+    metadata+: {
+      namespace: params.namespace,
+    },
+  },
+);
+
 {
   '10_prometheusrule': alerts('openshift-upgrade-controller', 'drain.alerts', params.alerts),
+  '20_upgradeconfigs': upgradeConfigs,
 }
