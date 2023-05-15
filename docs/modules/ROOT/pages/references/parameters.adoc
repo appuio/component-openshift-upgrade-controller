@@ -46,6 +46,87 @@ The Git reference to the controller deployment manifests.
 The default is the tag of the controller image.
 
 
+== `cluster_version.openshiftVersion`
+
+[horizontal]
+type:: object
+default::
++
+[source,yaml]
+----
+Major: '4'
+Minor: '8'
+----
+
+This parameter is used to conditionally add configurations in the `ClusterVersion` object.
+
+The component currently uses this parameter to set default values for
+* field `capabilities.baselineCapabilitySet`, which was introduced in OpenShift 4.11.
+The component defaults this field to `v4.11`.
+* field `channel`.
+The component sets this field to `stable-<Major>.<Minor>`, where `<Major>` and `<Minor>` are replaced with the values of fields `Major` and `Minor` of this parameter.
+
+== `cluster_version.spec`
+
+[horizontal]
+type:: object
+default::
++
+[source,yaml]
+----
+upstream: https://api.openshift.com/api/upgrades_info/v1/graph
+----
+
+See the https://docs.openshift.com/container-platform/latest/updating/updating-cluster-between-minor.html[OpenShift docs] for available parameters and values.
+
+[NOTE]
+====
+Field `clusterID` must be set in the `ClusterVersion` object.
+The value for this field is supposed to be extracted from the cluster as a fact.
+However, the corresponding dynamic fact isn't implemented yet.
+We recommend that users set `spec.clusterID` to a non-component parameter such as `openshift.clusterID` in the config hierarchy.
+====
+
+Values specified in this parameter take precedence over default values derived from parameter `openshiftVersion`.
+
+
+=== Example
+
+We recommend configuring a reference for component parameter `openshift_upgrade_controller.cluster_version.spec.clusterID` for all OpenShift 4 clusters:
+
+.openshift4.yml
+[source,yaml]
+----
+parameters:
+  openshift:
+    clusterID: 'OVERRIDE_THIS_IN_THE_CLUSTER_CONFIG'
+  openshift_upgrade_controller:
+    cluster_version:
+      spec:
+        clusterID: ${openshift.clusterID}
+----
+
+With this approach, each individual cluster config only needs to set generic parameter `openshift.clusterID`.
+
+.cluster.yml
+[source,yaml]
+----
+parameters:
+  openshift:
+    clusterID: '6d8329e3-7098-4bab-b7d8-11f1dc353481'
+
+  openshift_upgrade_controller:
+    cluster_version:
+      spec: ...
+----
+
+[NOTE]
+====
+This example assumes that `openshift_upgrade_controller.cluster_version.spec.clusterID` is set to `${openshift.clusterID}` somewhere in the inventory.
+Due to https://github.com/projectsyn/commodore/issues/138, this can not yet be done in the defaults.
+====
+
+
 == `alerts`
 
 [horizontal]
