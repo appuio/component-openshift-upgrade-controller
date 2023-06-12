@@ -25,7 +25,7 @@ local alerts = function(name, groupName, alerts)
                 labels+: alertlabels,
               },
               std.objectFields(alerts)
-            )),
+            ), function(x) x.alert),
         },
       ],
     },

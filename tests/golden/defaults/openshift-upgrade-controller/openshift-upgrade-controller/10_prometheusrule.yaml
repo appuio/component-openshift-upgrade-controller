@@ -10,6 +10,19 @@ spec:
   groups:
     - name: drain.alerts
       rules:
+        - alert: MaintenanceInProgress
+          annotations:
+            description: Cluster is currently upgrading
+            message: An OpenShift upgrade is in progress on this cluster
+            summary: Cluster is currently upgrading
+          expr: |
+            max(max_over_time(openshift_upgrade_controller_cluster_upgrading [5m])) > 0
+          for: 0m
+          labels:
+            Maintenance: 'true'
+            severity: info
+            syn: 'true'
+            syn_component: openshift-upgrade-controller
         - alert: NodeDrainStuck
           annotations:
             description: Node {{$labels.node}} is draining for more than 10 minutes.
