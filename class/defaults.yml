@@ -47,3 +47,16 @@ parameters:
           labels:
             severity: warning
             Maintenance: "true"
+      MaintenanceInProgress:
+        enabled: true
+        rule:
+          annotations:
+            description: Cluster is currently upgrading
+            message: An OpenShift upgrade is in progress on this cluster
+            summary: Cluster is currently upgrading
+          expr: |
+            max(max_over_time(openshift_upgrade_controller_cluster_upgrading [5m])) > 0
+          for: 0m
+          labels:
+            severity: info
+            Maintenance: "true"
