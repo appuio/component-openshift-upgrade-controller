@@ -9,7 +9,8 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-view: 'true'
   name: syn:openshift-upgrade-controller:view
 rules:
-  - apiGroups: managedupgrade.appuio.io
+  - apiGroups:
+      - managedupgrade.appuio.io
     resources:
       - clusterversions
       - upgradeconfigs
@@ -29,7 +30,8 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-edit: 'true'
   name: syn:openshift-upgrade-controller:edit
 rules:
-  - apiGroups: managedupgrade.appuio.io
+  - apiGroups:
+      - managedupgrade.appuio.io
     resources:
       - clusterversions
       - upgradeconfigs
