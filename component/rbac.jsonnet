@@ -11,7 +11,7 @@ local aggregatedRoles = [
     },
     rules: [
       {
-        apiGroups: 'managedupgrade.appuio.io',
+        apiGroups: [ 'managedupgrade.appuio.io' ],
         resources: [
           'clusterversions',
           'upgradeconfigs',
@@ -34,7 +34,7 @@ local aggregatedRoles = [
     },
     rules: [
       {
-        apiGroups: 'managedupgrade.appuio.io',
+        apiGroups: [ 'managedupgrade.appuio.io' ],
         resources: [
           'clusterversions',
           'upgradeconfigs',
