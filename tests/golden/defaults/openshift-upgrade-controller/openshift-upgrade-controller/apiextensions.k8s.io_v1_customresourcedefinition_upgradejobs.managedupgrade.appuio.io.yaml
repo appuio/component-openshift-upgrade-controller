@@ -5,6 +5,7 @@ metadata:
     controller-gen.kubebuilder.io/version: v0.12.0
   labels:
     app.kubernetes.io/managed-by: commodore
+    argocd.argoproj.io/sync-options: Replace=true
   name: upgradejobs.managedupgrade.appuio.io
 spec:
   group: managedupgrade.appuio.io
