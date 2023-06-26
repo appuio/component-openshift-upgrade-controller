@@ -18,6 +18,9 @@ parameters:
             cron: "0 10 * * 2"
             location: Europe/Zurich
           jobTemplate:
+            metadata:
+              labels:
+                upgradeconfig/name: appuio-monday-afternoon
             spec:
               config:
                 upgradeTimeout: 12h
@@ -25,3 +28,36 @@ parameters:
                   timeout: 1h
                 postUpgradeHealthChecks:
                   timeout: 1h
+
+    upgrade_job_hooks:
+      notify:
+        spec:
+          events:
+            - Create
+            - Start
+            - UpgradeComplete
+            - Finish
+            - Success
+            - Failure
+          run: Next
+          failurePolicy: Ignore
+          selector:
+            matchLabels: ${openshift_upgrade_controller:upgrade_configs:appuio-monday-afternoon:spec:jobTemplate:metadata:labels}
+          template:
+            spec:
+              template:
+                spec:
+                  containers:
+                    - name: notify
+                      image: curlimages/curl:8.1.2 # sponsored OSS image
+                      args:
+                        - -XPOST
+                        - -H
+                        - 'Content-Type: application/json'
+                        - -d
+                        - '{"event": $(EVENT_NAME), "version": $(JOB_spec_desiredVersion_image)}'
+                        - https://example.com/webhook
+                  restartPolicy: Never
+              backoffLimit: 3
+              ttlSecondsAfterFinished: 43200 # 12h
+              activeDeadlineSeconds: 300 # 5m

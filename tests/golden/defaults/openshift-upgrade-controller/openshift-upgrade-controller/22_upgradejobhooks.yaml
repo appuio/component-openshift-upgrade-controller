@@ -1,0 +1,39 @@
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeJobHooks
+metadata:
+  annotations: {}
+  labels:
+    name: notify
+  name: notify
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  events:
+    - Create
+    - Start
+    - UpgradeComplete
+    - Finish
+    - Success
+    - Failure
+  failurePolicy: Ignore
+  run: Next
+  selector:
+    matchLabels:
+      upgradeconfig/name: appuio-monday-afternoon
+  template:
+    spec:
+      activeDeadlineSeconds: 300
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+            - args:
+                - -XPOST
+                - -H
+                - 'Content-Type: application/json'
+                - -d
+                - '{"event": $(EVENT_NAME), "version": $(JOB_spec_desiredVersion_image)}'
+                - https://example.com/webhook
+              image: curlimages/curl:8.1.2
+              name: notify
+          restartPolicy: Never
+      ttlSecondsAfterFinished: 43200

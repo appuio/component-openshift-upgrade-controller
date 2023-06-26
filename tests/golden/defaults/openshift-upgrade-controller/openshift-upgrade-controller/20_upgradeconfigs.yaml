@@ -8,6 +8,9 @@ metadata:
   namespace: appuio-openshift-upgrade-controller
 spec:
   jobTemplate:
+    metadata:
+      labels:
+        upgradeconfig/name: appuio-monday-afternoon
     spec:
       config:
         postUpgradeHealthChecks:

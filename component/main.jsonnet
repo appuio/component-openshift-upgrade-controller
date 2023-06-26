@@ -40,7 +40,17 @@ local upgradeConfigs = com.generateResources(
   },
 );
 
+local upgradeJobHooks = com.generateResources(
+  params.upgrade_job_hooks,
+  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHooks', name) {
+    metadata+: {
+      namespace: params.namespace,
+    },
+  },
+);
+
 {
   '10_prometheusrule': alerts('openshift-upgrade-controller', 'drain.alerts', params.alerts),
   '20_upgradeconfigs': upgradeConfigs,
+  '22_upgradejobhooks': upgradeJobHooks,
 }

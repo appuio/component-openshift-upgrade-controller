@@ -80,6 +80,59 @@ The value is the configuration of the `UpgradeConfig` object.
 See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
 
 
+== upgrade_job_hooks
+
+[horizontal]
+type:: dict
+default:: `{}`
+example::
++
+[source,yaml]
+----
+upgrade_job_hooks:
+  notify:
+    spec:
+      events:
+        - Create
+        - Start
+        - UpgradeComplete
+        - Finish
+        - Success
+        - Failure
+      run: Next
+      failurePolicy: Ignore
+      selector:
+        matchLabels: ${openshift_upgrade_controller:upgrade_configs:monday-afternoon:spec:jobTemplate:metadata:labels}
+      template:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: notify
+                image: curlimages/curl:8.1.2 # sponsored OSS image
+                args:
+                - -XPOST
+                - -H
+                - 'Content-Type: application/json'
+                - -d
+                - '{"event": $(EVENT_NAME), "version": $(JOB_spec_desiredVersion_image)}'
+                - https://example.com/webhook
+              restartPolicy: Never
+          backoffLimit: 3
+          ttlSecondsAfterFinished: 43200 # 12h
+          activeDeadlineSeconds: 300 # 5m
+----
+
+This parameter is used to configure the `UpgradeJobHooks` objects.
+The dictionary key is used as the name of the `UpgradeJobHooks` object.
+The value is the configuration of the `UpgradeJobHooks` object.
+
+See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
+
+[TIP]
+`spec.selector` can be referenced from the `UpgradeConfig` object using Commodore variable expansion.
+
+
 == `cluster_version.openshiftVersion`
 
 [horizontal]
