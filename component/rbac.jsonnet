@@ -16,6 +16,7 @@ local aggregatedRoles = [
           'clusterversions',
           'upgradeconfigs',
           'upgradejobs',
+          'upgradejobhooks',
         ],
         verbs: [
           'get',
@@ -39,6 +40,7 @@ local aggregatedRoles = [
           'clusterversions',
           'upgradeconfigs',
           'upgradejobs',
+          'upgradejobhooks',
         ],
         verbs: [
           'create',
