@@ -14,7 +14,7 @@ com.Kustomization(
   params.manifests_version,
   {},
   params.kustomize_input {
-    commonLabels+: {
+    commonAnnotations+: {
       // Use replace for CRDs to avoid errors because the
       // last-applied-configuration annotation gets too big.
       'argocd.argoproj.io/sync-options': 'Replace=true',
