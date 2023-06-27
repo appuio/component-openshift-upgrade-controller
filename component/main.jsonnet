@@ -42,7 +42,7 @@ local upgradeConfigs = com.generateResources(
 
 local upgradeJobHooks = com.generateResources(
   params.upgrade_job_hooks,
-  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHooks', name) {
+  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', name) {
     metadata+: {
       namespace: params.namespace,
     },

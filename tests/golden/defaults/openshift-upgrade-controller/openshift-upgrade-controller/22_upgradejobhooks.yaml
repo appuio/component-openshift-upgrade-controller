@@ -1,5 +1,5 @@
 apiVersion: managedupgrade.appuio.io/v1beta1
-kind: UpgradeJobHooks
+kind: UpgradeJobHook
 metadata:
   annotations: {}
   labels:
