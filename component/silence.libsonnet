@@ -61,7 +61,6 @@ local ujh = kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', '
       spec+: {
         template+: {
           spec+: {
-            nodeSelector: params.upgrade_silence.node_selector,
             restartPolicy: 'Never',
             serviceAccountName: sa.metadata.name,  // TODO
             containers: [
@@ -114,7 +113,7 @@ local ujh = kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', '
       },
     },
   },
-};
+} + com.makeMergeable(params.upgrade_silence.additional_job_configuration);
 
 if enabled then
   [ sa, crb, cm, certcm, ujh ]

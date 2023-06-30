@@ -36,14 +36,19 @@ parameters:
       alertmanager_operated_service: "alertmanager-operated"
       alertmanager_namespace: "openshift-monitoring"
       upgrade_job_selector: {}
+      alert_matchers: {}
       silence_timeout_hours: 12
       silence_after_finish_minutes: 30
-      alert_matchers: {}
-      node_selector:
-        node-role.kubernetes.io/infra: ''
       additional_job_configuration:
         metadata: {}
-        spec: {}
+        spec:
+          template:
+            spec:
+              template:
+                spec:
+                  nodeSelector:
+                    node-role.kubernetes.io/infra: ''
+
 
     cluster_version:
       openshiftVersion:
