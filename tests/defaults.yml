@@ -61,3 +61,21 @@ parameters:
               backoffLimit: 3
               ttlSecondsAfterFinished: 43200 # 12h
               activeDeadlineSeconds: 300 # 5m
+
+    upgrade_silence:
+      upgrade_job_selector:
+        matchLabels: ${openshift_upgrade_controller:upgrade_configs:appuio-monday-afternoon:spec:jobTemplate:metadata:labels}
+      alert_matchers:
+        "only maintenance without SLOs":
+          matchers:
+            - name: alertname
+              value: "Watchdog"
+              isRegex: false
+              isEqual: false
+            - name: Maintenance
+              value: "true"
+              isRegex: false
+              isEqual: false
+      additional_job_configuration:
+        metadata: {}
+        spec: {}
