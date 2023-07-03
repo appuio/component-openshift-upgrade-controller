@@ -17,6 +17,10 @@ parameters:
         registry: gcr.io
         image: kubebuilder/kube-rbac-proxy
         tag: v0.14.1
+      oc:
+        registry: quay.io
+        image: appuio/oc
+        tag: v4.12
 
     manifests_version: ${openshift_upgrade_controller:images:openshift_upgrade_controller:tag}
 
@@ -26,6 +30,25 @@ parameters:
     upgrade_configs: {}
 
     upgrade_job_hooks: {}
+
+    upgrade_silence:
+      alertmanager_host: "alertmanager-main"
+      alertmanager_operated_service: "alertmanager-operated"
+      alertmanager_namespace: "openshift-monitoring"
+      upgrade_job_selector: {}
+      alert_matchers: {}
+      silence_timeout_hours: 12
+      silence_after_finish_minutes: 30
+      additional_job_configuration:
+        metadata: {}
+        spec:
+          template:
+            spec:
+              template:
+                spec:
+                  nodeSelector:
+                    node-role.kubernetes.io/infra: ''
+
 
     cluster_version:
       openshiftVersion:

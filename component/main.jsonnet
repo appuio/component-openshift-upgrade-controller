@@ -53,4 +53,5 @@ local upgradeJobHooks = com.generateResources(
   '10_prometheusrule': alerts('openshift-upgrade-controller', 'drain.alerts', params.alerts),
   '20_upgradeconfigs': upgradeConfigs,
   '22_upgradejobhooks': upgradeJobHooks,
+  '90_upgrade_silence': import 'silence.libsonnet',
 }
