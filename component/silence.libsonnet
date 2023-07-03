@@ -62,7 +62,7 @@ local ujh = kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', '
         template+: {
           spec+: {
             restartPolicy: 'Never',
-            serviceAccountName: sa.metadata.name,  // TODO
+            serviceAccountName: sa.metadata.name,
             containers: [
               kube.Container('silence') {
                 image: params.images.oc.registry + '/' + params.images.oc.image + ':' + params.images.oc.tag,
