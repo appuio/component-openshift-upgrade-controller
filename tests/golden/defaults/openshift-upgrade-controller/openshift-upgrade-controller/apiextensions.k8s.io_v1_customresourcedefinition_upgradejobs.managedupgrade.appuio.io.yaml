@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     argocd.argoproj.io/sync-options: Replace=true
-    controller-gen.kubebuilder.io/version: v0.12.0
+    controller-gen.kubebuilder.io/version: v0.12.1
   labels:
     app.kubernetes.io/managed-by: commodore
   name: upgradejobs.managedupgrade.appuio.io
@@ -89,7 +89,8 @@ spec:
                 type: object
               desiredVersion:
                 description: DesiredVersion defines the desired version to upgrade
-                  to
+                  to. Can be empty if the upgrade job was created when there was no
+                  new version available.
                 properties:
                   force:
                     description: force allows an administrator to update to an image
@@ -125,7 +126,6 @@ spec:
                 type: string
             required:
             - config
-            - desiredVersion
             - startAfter
             - startBefore
             type: object
