@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     argocd.argoproj.io/sync-options: Replace=true
-    controller-gen.kubebuilder.io/version: v0.12.0
+    controller-gen.kubebuilder.io/version: v0.12.1
   labels:
     app.kubernetes.io/managed-by: commodore
   name: upgradejobhooks.managedupgrade.appuio.io
