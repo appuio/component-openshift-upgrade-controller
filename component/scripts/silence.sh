@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -xeuo pipefail
 
 job_name="$JOB_metadata_name"
 
@@ -27,7 +27,10 @@ while IFS= read -r silence; do
 
   id=$(curl "${curl_opts[@]}" | jq --arg comment "${comment}" -r '.[] | select(.status.state == "active") | select(.comment == "$comment") | .id' | head -n 1)
   if [ -n "${id}" ]; then
+    echo "Updating silence with id '${id}' ..."
     body=$(printf %s "${body}" | jq --arg id "${id}" '.id = $id')
+  else
+    echo "Creating silence ..."
   fi
 
   curl "${curl_opts[@]}" -XPOST -d "${body}"
