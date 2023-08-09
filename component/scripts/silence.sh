@@ -25,7 +25,7 @@ while IFS= read -r silence; do
       '.startsAt = $startsAt | .endsAt = $endsAt | .createdBy = $createdBy | .comment = $comment'
   )
 
-  id=$(curl "${curl_opts[@]}" | jq --arg comment "${comment}" -r '.[] | select(.status.state == "active") | select(.comment == "$comment") | .id' | head -n 1)
+  id=$(curl "${curl_opts[@]}" | jq --arg comment "${comment}" -r '.[] | select(.status.state == "active") | select(.comment == $comment) | .id' | head -n 1)
   if [ -n "${id}" ]; then
     echo "Updating silence with id '${id}' ..."
     body=$(printf %s "${body}" | jq --arg id "${id}" '.id = $id')
