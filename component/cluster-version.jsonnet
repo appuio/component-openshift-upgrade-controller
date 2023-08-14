@@ -12,7 +12,7 @@ local cluster_gt_411 =
 
 local clusterVersion = kube._Object('managedupgrade.appuio.io/v1beta1', 'ClusterVersion', 'version') {
   metadata+: {
-    namespace: 'openshift-cluster-version',
+    namespace: params.namespace,
     labels+: {
       'app.kubernetes.io/managed-by': 'commodore',
     },
