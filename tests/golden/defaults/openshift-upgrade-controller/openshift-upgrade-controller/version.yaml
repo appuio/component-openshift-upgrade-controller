@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/managed-by: commodore
     name: version
   name: version
-  namespace: openshift-cluster-version
+  namespace: appuio-openshift-upgrade-controller
 spec:
   template:
     spec:
