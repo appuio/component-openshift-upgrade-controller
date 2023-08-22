@@ -6,10 +6,6 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift_upgrade_controller;
 
-local cluster_gt_411 =
-  params.cluster_version.openshiftVersion.Major == '4' &&
-  std.parseInt(params.cluster_version.openshiftVersion.Minor) >= 11;
-
 local clusterVersion = kube._Object('managedupgrade.appuio.io/v1beta1', 'ClusterVersion', 'version') {
   metadata+: {
     namespace: params.namespace,
@@ -20,9 +16,6 @@ local clusterVersion = kube._Object('managedupgrade.appuio.io/v1beta1', 'Cluster
   spec: {
     template: {
       spec: {
-        [if cluster_gt_411 then 'capabilities']: {
-          baselineCapabilitySet: 'v4.11',
-        },
         channel: 'stable-%(Major)s.%(Minor)s' % params.cluster_version.openshiftVersion,
       } + com.makeMergeable(params.cluster_version.spec) + {
         // desiredUpdate is removed by the openshift-upgrade-controller, but this might help causing less confusion
