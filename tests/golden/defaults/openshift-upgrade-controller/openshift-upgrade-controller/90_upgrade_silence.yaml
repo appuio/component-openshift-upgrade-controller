@@ -119,7 +119,7 @@ spec:
                   value: '30'
                 - name: SILENCE_TIMEOUT_HOURS
                   value: '12'
-              image: quay.io/appuio/oc:v4.12
+              image: quay.io/appuio/oc:v4.13
               imagePullPolicy: IfNotPresent
               name: silence
               ports: []
