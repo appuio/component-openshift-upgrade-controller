@@ -41,7 +41,7 @@ spec:
                   oc -n openshift-machine-api scale --replicas=3 machineset app
               command:
                 - sh
-              image: quay.io/appuio/oc:v4.11
+              image: quay.io/appuio/oc:v4.13
               name: remove-nodes
               env:
                 - name: HOME
