@@ -1,0 +1,70 @@
+= UpgradeJobHook examples
+
+This is a collection of upgradejobhooks for frequently used one-off tasks.
+
+== Scale down a machineset
+
+Scale down a machineset to remove a node after upgradejob is finished.
+Disables ArgoCD auto-sync for the `root` and `openshift4-nodes` apps.
+Only runs once on the next UpgradeJob due to the `.spec.run: Next` setting.
+A clusterrolebinding for cluster-admin for the appuio-openshift-upgrade-controller default serviceaccount is included below.
+
+[source,yaml]
+----
+---
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeJobHook
+metadata:
+  name: scale-down-machineset
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  events:
+    - Finish
+  selector:
+    matchLabels:
+      appuio-managed-upgrade: "true"
+  run: Next
+  template:
+    spec:
+      template:
+        spec:
+          containers:
+            - args:
+                - -c
+                - |
+                  #!/bin/sh
+                  set -e
+                  oc -n syn patch apps root --type=json \
+                    -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+                  oc -n syn patch apps openshift4-nodes --type=json \
+                    -p '[{"op":"replace", "path":"/spec/syncPolicy", "value": {}}]'
+                  oc -n openshift-machine-api scale --replicas=3 machineset app
+              command:
+                - sh
+              image: quay.io/appuio/oc:v4.13
+              name: remove-nodes
+              env:
+                - name: HOME
+                  value: /export
+              volumeMounts:
+                - mountPath: /export
+                  name: export
+              workingDir: /export
+          restartPolicy: Never
+          volumes:
+            - emptyDir: {}
+              name: export
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: drain-nodes-upgrade-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: appuio-openshift-upgrade-controller
+----
