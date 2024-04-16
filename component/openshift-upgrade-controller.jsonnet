@@ -17,6 +17,18 @@ local removeUpstreamNamespace = kube.Namespace(upstreamNamespace) {
   } + com.makeMergeable(params.namespaceMetadata),
 };
 
+local setPriorityClass = {
+  patch: |||
+    - op: add
+      path: "/spec/template/spec/priorityClassName"
+      value: "system-cluster-critical"
+  |||,
+  target: {
+    kind: 'Deployment',
+    name: 'openshift-upgrade-controller-controller-manager',
+  },
+};
+
 local patch = function(p) {
   patch: std.manifestJsonMinified(p),
 };
@@ -39,6 +51,7 @@ com.Kustomization(
   params.kustomize_input {
     patches+: [
       patch(removeUpstreamNamespace),
+      setPriorityClass,
     ],
     labels+: [
       {
