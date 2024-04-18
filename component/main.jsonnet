@@ -46,6 +46,17 @@ local upgradeJobHooks = com.generateResources(
     metadata+: {
       namespace: params.namespace,
     },
+    spec+: {
+      template+: {
+        spec+: {
+          template+: {
+            spec+: {
+              priorityClassName: 'system-cluster-critical',
+            },
+          },
+        },
+      },
+    },
   },
 );
 

@@ -35,5 +35,6 @@ spec:
                 - https://example.com/webhook
               image: curlimages/curl:8.1.2
               name: notify
+          priorityClassName: system-cluster-critical
           restartPolicy: Never
       ttlSecondsAfterFinished: 43200

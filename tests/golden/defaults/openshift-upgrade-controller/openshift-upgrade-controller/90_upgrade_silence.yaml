@@ -135,6 +135,7 @@ spec:
                   subPath: silence
           nodeSelector:
             node-role.kubernetes.io/infra: ''
+          priorityClassName: system-cluster-critical
           restartPolicy: Never
           serviceAccountName: maintenance-silence
           volumes:
