@@ -127,6 +127,8 @@ This parameter is used to configure the `UpgradeJobHooks` objects.
 The dictionary key is used as the name of the `UpgradeJobHooks` object.
 The value is the configuration of the `UpgradeJobHooks` object.
 
+`UpgradeJobHooks` default to `priorityClassName: system-cluster-critical`.
+
 See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
 
 [TIP]
