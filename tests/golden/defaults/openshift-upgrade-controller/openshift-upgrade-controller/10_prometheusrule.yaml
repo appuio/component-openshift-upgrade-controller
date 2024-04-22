@@ -31,7 +31,7 @@ spec:
             summary: Node is draining for more than 10 minutes.
           expr: |
             openshift_upgrade_controller_node_draining == 1
-          for: 10m
+          for: 15m
           labels:
             Maintenance: 'true'
             severity: warning
