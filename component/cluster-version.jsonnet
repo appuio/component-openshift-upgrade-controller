@@ -23,6 +23,17 @@ local clusterVersion = kube._Object('managedupgrade.appuio.io/v1beta1', 'Cluster
         desiredUpdate:: null,
       },
     },
+    local overlays = params.cluster_version.overlays,
+    overlays: std.filterMap(
+      function(k) overlays[k] != null && overlays[k].spec != null,
+      function(k) {
+        from: k,
+        overlay: {
+          spec: overlays[k].spec,
+        },
+      },
+      std.objectFields(overlays)
+    ),
   },
 };
 

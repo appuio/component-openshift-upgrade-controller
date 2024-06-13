@@ -8,6 +8,11 @@ parameters:
             quay.io/openshift-release-dev/ocp-release@sha256:4f6089b62f54887ecc14684fafbe235a12f9d0c6b77379dee6ccc3675de6ed6d
           version: 4.11.38
         upstream: 'https://api.openshift.com/api/upgrades_info/v1/graph'
+      overlays:
+        "2024-06-13T17:00:00+02:00":
+          spec:
+            channel: stable-4.14
+        "2024-06-15T17:00:00+02:00": null
 
     upgrade_configs:
       appuio-monday-afternoon:
