@@ -309,6 +309,37 @@ Due to https://github.com/projectsyn/commodore/issues/138, this can not yet be d
 ====
 
 
+== `cluster_version.overlays`
+
+[horizontal]
+type:: object
+default:: `{}`
+example::
++
+[source,yaml]
+----
+cluster_version:
+  spec:
+    template:
+      spec:
+        channel: stable-4.13
+  overlays:
+    "2024-06-13T17:00:00+02:00":
+      spec:
+        channel: stable-4.14
+----
+
+This parameter can be used to schedule changes to the `ClusterVersion` object.
+The overlay with the latest `from` timestamp after the current time is merged onto the base configuration in `spec.template`.
+Overlays do not accumulate.
+See the upgrade controller `ClusterVersion` CRD for details.
+
+The dictionary key is used as the `from` field of the overlay.
+The value is used as the `overlay` field of the overlay.
+
+Entries can be removed by setting the value to `null` in the hierarchy.
+
+
 == `alerts`
 
 [horizontal]

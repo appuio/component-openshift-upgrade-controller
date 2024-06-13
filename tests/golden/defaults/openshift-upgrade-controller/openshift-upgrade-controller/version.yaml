@@ -8,6 +8,11 @@ metadata:
   name: version
   namespace: appuio-openshift-upgrade-controller
 spec:
+  overlays:
+    - from: '2024-06-13T17:00:00+02:00'
+      overlay:
+        spec:
+          channel: stable-4.14
   template:
     spec:
       channel: stable-4.11
