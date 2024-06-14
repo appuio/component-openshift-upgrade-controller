@@ -12,7 +12,7 @@ parameters:
       openshift_upgrade_controller:
         registry: ghcr.io
         image: appuio/openshift-upgrade-controller
-        tag: v0.6.2
+        tag: v0.7.1
       kube_rbac_proxy:
         registry: gcr.io
         image: kubebuilder/kube-rbac-proxy
