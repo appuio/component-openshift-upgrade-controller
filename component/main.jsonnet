@@ -65,4 +65,5 @@ local upgradeJobHooks = com.generateResources(
   '20_upgradeconfigs': upgradeConfigs,
   '22_upgradejobhooks': upgradeJobHooks,
   '90_upgrade_silence': import 'silence.libsonnet',
+  '90_admin_ack': import 'admin-ack.libsonnet',
 }
