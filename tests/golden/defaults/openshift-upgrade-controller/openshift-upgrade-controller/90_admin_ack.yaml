@@ -49,7 +49,7 @@ data:
       ackKey="ack-4.${lastMinor}-kube-1.${kubernetesMinor}-api-removals-in-4.${minor}"
     fi
 
-    patch=$(jq -nc --arg ackKey "$ackKey" '{ data: { $ackKey: "true" } }')
+    patch=$(jq -nc --arg ackKey "$ackKey" '{ data: { ($ackKey): "true" } }')
 
     echo "Patching ConfigMap $CM_NAME in namespace $CM_NAMESPACE with '$patch'"
     oc -n "$CM_NAMESPACE" patch cm "$CM_NAME" --patch "$patch" --type=merge
