@@ -49,6 +49,21 @@ parameters:
                   nodeSelector:
                     node-role.kubernetes.io/infra: ''
 
+    admin_ack:
+      upgrade_job_selector: {}
+      overrides: {}
+      config_map_ref:
+        name: admin-acks
+        namespace: openshift-config
+      additional_job_configuration:
+        metadata: {}
+        spec:
+          template:
+            spec:
+              template:
+                spec:
+                  nodeSelector:
+                    node-role.kubernetes.io/infra: ''
 
     cluster_version:
       openshiftVersion:

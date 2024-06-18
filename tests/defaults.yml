@@ -84,3 +84,10 @@ parameters:
       additional_job_configuration:
         metadata: {}
         spec: {}
+
+    admin_ack:
+      upgrade_job_selector:
+        matchLabels: ${openshift_upgrade_controller:upgrade_configs:appuio-monday-afternoon:spec:jobTemplate:metadata:labels}
+      additional_job_configuration:
+        metadata: {}
+        spec: {}
