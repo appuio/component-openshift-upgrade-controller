@@ -135,6 +135,39 @@ See https://github.com/appuio/openshift-upgrade-controller for the manifest defi
 `spec.selector` can be referenced from the `UpgradeConfig` object using Commodore variable expansion.
 
 
+== upgrade_suspension_windows
+
+[horizontal]
+type:: dict
+default:: `{}`
+example::
++
+[source,yaml]
+----
+upgrade_suspension_windows:
+  end-of-year-holidays-2023:
+    spec:
+      start: "2023-12-25T00:00:00Z"
+      end: "2024-01-08T00:00:00Z"
+      reason: "End of year holidays"
+      configSelector: {}
+      jobSelector:
+        matchLabels: ${openshift_upgrade_controller:upgrade_configs:monday-afternoon:spec:jobTemplate:metadata:labels}
+----
+
+This parameter is used to configure the `UpgradeSuspensionWindow` objects.
+The dictionary key is used as the name of the `UpgradeSuspensionWindow` object.
+The value is the configuration of the `UpgradeSuspensionWindow` object.
+
+See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
+
+[TIP]
+`spec.jobSelector` and `spec.configSelector` can be referenced from the `UpgradeConfig` and `UpgradeJob` object using Commodore variable expansion.
+
+[TIP]
+An empty selector (`jobSelector: {}`) matches all objects. A null selector (`jobSelector: null`, `jobSelector:`, omitted) matches no objects.
+
+
 == `upgrade_silence`
 
 [horizontal]

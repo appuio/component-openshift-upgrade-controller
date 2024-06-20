@@ -67,6 +67,17 @@ parameters:
               ttlSecondsAfterFinished: 43200 # 12h
               activeDeadlineSeconds: 300 # 5m
 
+    upgrade_suspension_windows:
+      end-of-year-holidays-2023:
+        spec:
+          start: "2023-12-25T00:00:00Z"
+          end: "2024-01-08T00:00:00Z"
+          reason: "End of year holidays"
+          configSelector: {}
+          jobSelector:
+            matchLabels:
+              upgradeconfig/name: appuio-monday-afternoon
+
     upgrade_silence:
       upgrade_job_selector:
         matchLabels: ${openshift_upgrade_controller:upgrade_configs:appuio-monday-afternoon:spec:jobTemplate:metadata:labels}

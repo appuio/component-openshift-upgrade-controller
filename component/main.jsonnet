@@ -60,10 +60,20 @@ local upgradeJobHooks = com.generateResources(
   },
 );
 
+local upgradeSuspensionWindows = com.generateResources(
+  params.upgrade_suspension_windows,
+  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeSuspensionWindow', name) {
+    metadata+: {
+      namespace: params.namespace,
+    },
+  },
+);
+
 {
   '10_prometheusrule': alerts('openshift-upgrade-controller', 'drain.alerts', params.alerts),
   '20_upgradeconfigs': upgradeConfigs,
   '22_upgradejobhooks': upgradeJobHooks,
+  '24_upgradesuspensionwindows': upgradeSuspensionWindows,
   '90_upgrade_silence': import 'silence.libsonnet',
   '90_admin_ack': import 'admin-ack.libsonnet',
 }
