@@ -31,6 +31,8 @@ parameters:
 
     upgrade_job_hooks: {}
 
+    upgrade_suspension_windows: {}
+
     upgrade_silence:
       alertmanager_host: "alertmanager-main"
       alertmanager_operated_service: "alertmanager-operated"
