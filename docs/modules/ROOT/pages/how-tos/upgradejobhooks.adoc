@@ -68,3 +68,74 @@ subjects:
     name: default
     namespace: appuio-openshift-upgrade-controller
 ----
+
+== Manually rotate the service CA certificate
+
+Force a rotation of the service CA certificate during the maintenance.
+See the https://docs.openshift.com/container-platform/4.15/security/certificates/service-serving-certificate.html#manually-rotate-service-ca_service-serving-certificate[OpenShift documentation] for details.
+The rotation will be skipped for noop upgradejobs.
+Only runs once on the next UpgradeJob due to the `.spec.run: Next` setting.
+A clusterrolebinding for cluster-admin for the appuio-openshift-upgrade-controller default serviceaccount is included below.
+
+[source,yaml]
+----
+---
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeJobHook
+metadata:
+  name: rotate-service-ca-cert
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  events:
+    - Start
+  selector:
+    matchLabels:
+      appuio-managed-upgrade: "true"
+  run: Next
+  template:
+    spec:
+      template:
+        spec:
+          containers:
+            - args:
+                - -c
+                - |
+                  #!/bin/bash
+                  set -xeuo pipefail
+
+                  version="${JOB_spec_desiredVersion_version:-}"
+
+                  if [ -z "${version}" ]; then
+                    echo "Noop upgradejob, skipping ca rotation"
+                  else
+                    oc delete secret/signing-key -n openshift-service-ca
+                  fi
+              command:
+                - bash
+              image: quay.io/appuio/oc:v4.15
+              name: delete-service-ca-cert
+              env:
+                - name: HOME
+                  value: /export
+              volumeMounts:
+                - mountPath: /export
+                  name: export
+              workingDir: /export
+          restartPolicy: Never
+          volumes:
+            - emptyDir: {}
+              name: export
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rotate-service-ca-cert
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: appuio-openshift-upgrade-controller
+----
