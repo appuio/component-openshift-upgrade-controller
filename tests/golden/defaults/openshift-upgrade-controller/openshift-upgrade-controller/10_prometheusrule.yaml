@@ -37,3 +37,17 @@ spec:
             severity: warning
             syn: 'true'
             syn_component: openshift-upgrade-controller
+        - alert: PausedMachineConfigPool
+          annotations:
+            description: |
+              MachineConfigPool {{$labels.pool}} is paused. Paused machine config pools have the potential to make the next upgradejob fail.
+            message: MachineConfigPool {{$labels.pool}} is paused
+            summary: Paused MachineConfigPool
+          expr: |
+            openshift_upgrade_controller_machine_config_pools_paused > 0
+          for: 5m
+          labels:
+            Maintenance: 'false'
+            severity: warning
+            syn: 'true'
+            syn_component: openshift-upgrade-controller
