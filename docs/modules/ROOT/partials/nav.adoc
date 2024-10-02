@@ -3,6 +3,7 @@
 
 * Runbooks
 ** xref:runbooks/NodeDrainStuck.adoc[NodeDrainStuck]
+** xref:runbooks/PausedMachineConfigPool.adoc[PausedMachineConfigPool]
 
 * How-Tos
 ** xref:how-tos/upgradejobhooks.adoc[UpgradeJobHook examples]
