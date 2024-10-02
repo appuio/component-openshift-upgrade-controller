@@ -1,0 +1,31 @@
+= PausedMachineConfigPool
+
+include::partial$runbooks/contribution_note.adoc[]
+
+== icon:glasses[] Overview
+
+This alert fires when a MachineConfigPool is paused, but there are no active or paused upgradejobs.
+Paused machine config pools will likely block the next maintenance and prevent the upgradejob from progressing.
+
+
+== icon:bug[] Steps for debugging
+
+Possible reasons why a MachineConfigPool is paused:
+
+* (likely) An engineer manually paused the MachineConfigPool (e.g. to prevent node reboots)
+* Something went wrong during a delayed upgrade of a MachineConfigPool by the upgrade controller
+* Another operator/component on the cluster paused the MachineConfigPool
+
+=== icon:search[] Check last update to the `.spec.paused` field
+
+You may be able to figure out who paused the pool by looking at the managed fields:
+
+[source,shell]
+----
+kubectl get mcp -oyaml --show-managed-fields | yq '.items[] | select(.spec.paused) | .metadata | {.name: .managedFields[] | select(.fieldsV1."f:spec"."f:paused")}'
+----
+
+If the manager of the field is `kubectl-edit` or `kubectl-patch` and it was recently updated, it was likely done manually by an engineer.
+Depending on the reason for pausing, consider to either ensure it is unpaused before the next maintenance or suspending maintenance on the cluster.
+
+If the pool was paused by an operator, look for the reason in the operator logs.
