@@ -33,6 +33,7 @@ rules:
   - update
 - apiGroups:
   - config.openshift.io
+  - managedupgrade.appuio.io
   resources:
   - clusterversions
   verbs:
@@ -54,23 +55,19 @@ rules:
 - apiGroups:
   - managedupgrade.appuio.io
   resources:
-  - clusterversions
-  verbs:
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
   - clusterversions/finalizers
+  - upgradeconfigs/finalizers
+  - upgradejobs/finalizers
   verbs:
   - update
 - apiGroups:
   - managedupgrade.appuio.io
   resources:
   - clusterversions/status
+  - upgradeconfigs/status
+  - upgradejobhooks/status
+  - upgradejobs/status
+  - upgradesuspensionwindows/status
   verbs:
   - get
   - patch
@@ -79,47 +76,6 @@ rules:
   - managedupgrade.appuio.io
   resources:
   - upgradeconfigs
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
-  - upgradeconfigs/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
-  - upgradeconfigs/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
-  - upgradejobhooks
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
-  - upgradejobhooks/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
   - upgradejobs
   verbs:
   - create
@@ -132,28 +88,9 @@ rules:
 - apiGroups:
   - managedupgrade.appuio.io
   resources:
-  - upgradejobs/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
-  - upgradejobs/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
+  - upgradejobhooks
   - upgradesuspensionwindows
   verbs:
   - get
   - list
   - watch
-- apiGroups:
-  - managedupgrade.appuio.io
-  resources:
-  - upgradesuspensionwindows/status
-  verbs:
-  - get
