@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     argocd.argoproj.io/sync-options: Replace=true
-    controller-gen.kubebuilder.io/version: v0.16.3
+    controller-gen.kubebuilder.io/version: v0.16.4
   labels:
     app.kubernetes.io/managed-by: commodore
   name: upgradesuspensionwindows.managedupgrade.appuio.io
