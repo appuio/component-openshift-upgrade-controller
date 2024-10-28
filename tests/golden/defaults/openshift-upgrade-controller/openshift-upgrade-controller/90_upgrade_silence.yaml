@@ -9,6 +9,22 @@ metadata:
   namespace: appuio-openshift-upgrade-controller
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence-alertmanager-api
+  name: maintenance-silence-alertmanager-api
+  namespace: appuio-openshift-upgrade-controller
+rules:
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - alertmanagers/api
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   annotations: {}
@@ -20,6 +36,23 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cluster-monitoring-operator
+subjects:
+  - kind: ServiceAccount
+    name: maintenance-silence
+    namespace: appuio-openshift-upgrade-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence-alertmanager-api
+  name: maintenance-silence-alertmanager-api
+  namespace: appuio-openshift-upgrade-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: maintenance-silence-alertmanager-api
 subjects:
   - kind: ServiceAccount
     name: maintenance-silence
