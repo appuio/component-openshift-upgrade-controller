@@ -20,11 +20,40 @@ local sa = kube.ServiceAccount('maintenance-silence') + namespace {
   automountServiceAccountToken: true,
 };
 
+local cr = kube.ClusterRole('maintenance-silence-alertmanager-api') + namespace {
+  rules: [
+    {
+      apiGroups: [ 'monitoring.coreos.com' ],
+      resources: [
+        'alertmanagers/api',
+      ],
+      verbs: [
+        'get',
+      ],
+    },
+  ],
+};
+
 local crb = kube.ClusterRoleBinding('maintenance-silence') + namespace {
   roleRef: {
     apiGroup: 'rbac.authorization.k8s.io',
     kind: 'ClusterRole',
     name: 'cluster-monitoring-operator',
+  },
+  subjects: [
+    {
+      kind: 'ServiceAccount',
+      name: sa.metadata.name,
+      namespace: sa.metadata.namespace,
+    },
+  ],
+};
+
+local crb2 = kube.ClusterRoleBinding('maintenance-silence-alertmanager-api') + namespace {
+  roleRef: {
+    apiGroup: 'rbac.authorization.k8s.io',
+    kind: 'ClusterRole',
+    name: 'maintenance-silence-alertmanager-api',
   },
   subjects: [
     {
@@ -117,6 +146,6 @@ local ujh = kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', '
 } + com.makeMergeable(params.upgrade_silence.additional_job_configuration);
 
 if enabled then
-  [ sa, crb, cm, certcm, ujh ]
+  [ sa, cr, crb, crb2, cm, certcm, ujh ]
 else
   {}
