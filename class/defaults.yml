@@ -1,6 +1,7 @@
 parameters:
   openshift_upgrade_controller:
-    =_metadata: {}
+    =_metadata:
+      multi_tenant: true
     namespace: appuio-openshift-upgrade-controller
     namespaceMetadata:
       annotations:
