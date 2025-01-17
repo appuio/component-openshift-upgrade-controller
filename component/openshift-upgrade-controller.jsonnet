@@ -42,7 +42,7 @@ com.Kustomization(
       newTag: image.tag,
       newName: '%(registry)s/%(image)s' % image,
     },
-    'gcr.io/kubebuilder/kube-rbac-proxy': {
+    'quay.io/brancz/kube-rbac-proxy': {
       local image = params.images.kube_rbac_proxy,
       newTag: image.tag,
       newName: '%(registry)s/%(image)s' % image,
