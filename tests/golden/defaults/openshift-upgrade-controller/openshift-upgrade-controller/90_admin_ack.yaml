@@ -90,7 +90,7 @@ spec:
                   value: openshift-config
                 - name: OVERRIDES_JSON
                   value: '{}'
-              image: quay.io/appuio/oc:v4.14
+              image: quay.io/appuio/oc:v4.16
               imagePullPolicy: IfNotPresent
               name: adminack
               ports: []
