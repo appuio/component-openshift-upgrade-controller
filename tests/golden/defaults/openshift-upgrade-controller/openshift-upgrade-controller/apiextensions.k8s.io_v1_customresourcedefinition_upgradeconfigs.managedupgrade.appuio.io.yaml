@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     argocd.argoproj.io/sync-options: Replace=true
-    controller-gen.kubebuilder.io/version: v0.17.0
+    controller-gen.kubebuilder.io/version: v0.17.1
   labels:
     app.kubernetes.io/managed-by: commodore
   name: upgradeconfigs.managedupgrade.appuio.io
@@ -246,6 +246,13 @@ spec:
                 - cron
                 - location
                 type: object
+              successfulJobsHistoryLimit:
+                description: |-
+                  SuccessfulJobsHistoryLimit is the number of successful jobs to keep.
+                  A value smaller or equal to zero indicates no limit.
+                  It is not possible to remove the most recent job.
+                  Defaults to 4 if not set.
+                type: integer
             required:
             - jobTemplate
             - maxSchedulingDelay
