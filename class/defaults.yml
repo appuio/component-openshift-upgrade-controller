@@ -34,6 +34,8 @@ parameters:
 
     upgrade_suspension_windows: {}
 
+    node_force_drains: {}
+
     upgrade_silence:
       alertmanager_host: "alertmanager-main"
       alertmanager_operated_service: "alertmanager-operated"

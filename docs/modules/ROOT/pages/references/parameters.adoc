@@ -168,6 +168,32 @@ See https://github.com/appuio/openshift-upgrade-controller for the manifest defi
 An empty selector (`jobSelector: {}`) matches all objects. A null selector (`jobSelector: null`, `jobSelector:`, omitted) matches no objects.
 
 
+== node_force_drains
+
+[horizontal]
+type:: dict
+default:: `{}`
+example::
++
+[source,yaml]
+----
+node_force_drains:
+  node-role-app:
+    spec:
+      nodeDrainGracePeriod: 1m
+      nodeSelector:
+        matchLabels:
+          node-role.kubernetes.io/app: ""
+      podForceDeleteGracePeriod: 2m
+----
+
+This parameter is used to configure the `NodeForceDrain` objects.
+The dictionary key is used as the name of the `NodeForceDrain` object.
+The value is the configuration of the `NodeForceDrain` object.
+
+See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
+
+
 == `upgrade_silence`
 
 [horizontal]
