@@ -13,7 +13,7 @@ parameters:
       openshift_upgrade_controller:
         registry: ghcr.io
         image: appuio/openshift-upgrade-controller
-        tag: v0.10.0
+        tag: v0.11.0
       kube_rbac_proxy:
         registry: quay.io
         image: brancz/kube-rbac-proxy
@@ -33,6 +33,8 @@ parameters:
     upgrade_job_hooks: {}
 
     upgrade_suspension_windows: {}
+
+    node_force_drains: {}
 
     upgrade_silence:
       alertmanager_host: "alertmanager-main"

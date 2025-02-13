@@ -69,11 +69,21 @@ local upgradeSuspensionWindows = com.generateResources(
   },
 );
 
+local nodeForceDrains = com.generateResources(
+  params.node_force_drains,
+  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'NodeForceDrain', name) {
+    metadata+: {
+      namespace: params.namespace,
+    },
+  },
+);
+
 {
   '10_prometheusrule': alerts('openshift-upgrade-controller', 'drain.alerts', params.alerts),
   '20_upgradeconfigs': upgradeConfigs,
   '22_upgradejobhooks': upgradeJobHooks,
   '24_upgradesuspensionwindows': upgradeSuspensionWindows,
+  '26_nodeforcedrains': nodeForceDrains,
   '90_upgrade_silence': import 'silence.libsonnet',
   '90_admin_ack': import 'admin-ack.libsonnet',
 }

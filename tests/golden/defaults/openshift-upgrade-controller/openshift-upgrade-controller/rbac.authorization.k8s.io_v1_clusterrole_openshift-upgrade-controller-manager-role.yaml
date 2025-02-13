@@ -14,6 +14,23 @@ rules:
   - list
   - watch
 - apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
   - batch
   resources:
   - jobs
@@ -33,7 +50,6 @@ rules:
   - update
 - apiGroups:
   - config.openshift.io
-  - managedupgrade.appuio.io
   resources:
   - clusterversions
   verbs:
@@ -55,6 +71,17 @@ rules:
 - apiGroups:
   - managedupgrade.appuio.io
   resources:
+  - clusterversions
+  - nodeforcedrains
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
   - clusterversions/finalizers
   - upgradeconfigs/finalizers
   - upgradejobs/finalizers
@@ -64,6 +91,7 @@ rules:
   - managedupgrade.appuio.io
   resources:
   - clusterversions/status
+  - nodeforcedrains/status
   - upgradeconfigs/status
   - upgradejobhooks/status
   - upgradejobs/status
