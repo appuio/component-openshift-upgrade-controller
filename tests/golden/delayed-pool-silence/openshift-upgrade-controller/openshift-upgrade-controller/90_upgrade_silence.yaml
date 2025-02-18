@@ -1,0 +1,195 @@
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence
+  name: maintenance-silence
+  namespace: appuio-openshift-upgrade-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence-alertmanager-api
+  name: maintenance-silence-alertmanager-api
+  namespace: appuio-openshift-upgrade-controller
+rules:
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - alertmanagers/api
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence
+  name: maintenance-silence
+  namespace: appuio-openshift-upgrade-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-monitoring-operator
+subjects:
+  - kind: ServiceAccount
+    name: maintenance-silence
+    namespace: appuio-openshift-upgrade-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence-alertmanager-api
+  name: maintenance-silence-alertmanager-api
+  namespace: appuio-openshift-upgrade-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: maintenance-silence-alertmanager-api
+subjects:
+  - kind: ServiceAccount
+    name: maintenance-silence
+    namespace: appuio-openshift-upgrade-controller
+---
+apiVersion: v1
+data:
+  silence: |
+    #!/bin/bash
+    set -xeuo pipefail
+
+    job_name="$JOB_metadata_name"
+
+    if [ "${EVENT_name}" = "\"MachineConfigPoolUnpause\"" ] && [ "${EVENT_reason}" = "\"Completed\"" ]; then
+      echo "Not creating a new silence when unpausing MCPs due to timeout"
+      exit 0
+    fi
+
+    curl_opts=( "https://${ALERTMANAGER_HOST}.${ALERTMANAGER_NAMESPACE}.svc.cluster.local:9095/api/v2/silences" --cacert /etc/ssl/certs/serving-certs/service-ca.crt --header 'Content-Type: application/json' --header "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" --resolve "${ALERTMANAGER_HOST}.${ALERTMANAGER_NAMESPACE}.svc.cluster.local:9095:$(getent hosts "${ALERTMANAGER_OPERATED_SERVICE}.${ALERTMANAGER_NAMESPACE}.svc.cluster.local" | awk '{print $1}' | head -n 1)" --silent )
+
+    startsAt="$(date -u +'%Y-%m-%dT%H:%M:%S' --date '-5 minutes')"
+    # We use SILENCE_TIMEOUT_HOURS regardless of whether we create a silence for
+    # the initial maintenance or for a delayed worker pool maintenance, when we
+    # trigger on `UpgradeComplete` and `MachineConfigPoolUnpause`.
+    endsAt="$(date -u +'%Y-%m-%dT%H:%M:%S' --date "+${SILENCE_TIMEOUT_HOURS} hours")"
+
+    # Expire silence on Finish or UpgradeComplete events. Also use
+    # SILENCE_AFTER_FINISH_MINUTES when expiring silence before paused pools are
+    # updated.
+    if [ "${EVENT_name}" = "\"Finish\"" ] || [ "${EVENT_name}" = "\"UpgradeComplete\"" ]; then
+      endsAt="$(date -u +'%Y-%m-%dT%H:%M:%S' --date "+${SILENCE_AFTER_FINISH_MINUTES} minutes")"
+    fi
+
+    while IFS= read -r silence; do
+      cmsg=$(printf %s "${silence}" | jq -r '.comment')
+      comment="Maintenance silence '${cmsg}' from '${job_name}'"
+
+      body=$(printf %s "$silence" | \
+        jq \
+          --arg comment "${comment}" \
+          --arg startsAt "${startsAt}" \
+          --arg endsAt "${endsAt}" \
+          --arg createdBy "Upgrade job '${job_name}'" \
+          '.startsAt = $startsAt | .endsAt = $endsAt | .createdBy = $createdBy | .comment = $comment'
+      )
+
+      id=$(curl "${curl_opts[@]}" | jq --arg comment "${comment}" -r '.[] | select(.status.state == "active") | select(.comment == $comment) | .id' | head -n 1)
+      if [ -n "${id}" ]; then
+        echo "Updating silence with id '${id}' ..."
+        body=$(printf %s "${body}" | jq --arg id "${id}" '.id = $id')
+      else
+        echo "Creating silence ..."
+      fi
+
+      curl "${curl_opts[@]}" -XPOST -d "${body}"
+    done <<<"$(printf %s "${SILENCES_JSON}" | jq -cr '.[]')"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence
+  name: maintenance-silence
+  namespace: appuio-openshift-upgrade-controller
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    service.beta.openshift.io/inject-cabundle: 'true'
+  labels:
+    name: maintenance-silence-certs
+  name: maintenance-silence-certs
+  namespace: appuio-openshift-upgrade-controller
+---
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeJobHook
+metadata:
+  annotations: {}
+  labels:
+    name: maintenance-silence
+  name: maintenance-silence
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  events:
+    - Start
+    - UpgradeComplete
+    - MachineConfigPoolUnpause
+    - Finish
+  selector:
+    matchLabels:
+      upgradeconfig/name: appuio-monday-afternoon
+  template:
+    spec:
+      template:
+        spec:
+          containers:
+            - args: []
+              command:
+                - /usr/local/bin/silence
+              env:
+                - name: ALERTMANAGER_HOST
+                  value: alertmanager-main
+                - name: ALERTMANAGER_NAMESPACE
+                  value: openshift-monitoring
+                - name: ALERTMANAGER_OPERATED_SERVICE
+                  value: alertmanager-operated
+                - name: SILENCES_JSON
+                  value: '[{"comment":"only maintenance without SLOs","matchers":[{"isEqual":false,"isRegex":false,"name":"alertname","value":"Watchdog"},{"isEqual":false,"isRegex":false,"name":"Maintenance","value":"true"}]}]'
+                - name: SILENCE_AFTER_FINISH_MINUTES
+                  value: '30'
+                - name: SILENCE_TIMEOUT_HOURS
+                  value: '12'
+              image: quay.io/appuio/oc:v4.14
+              imagePullPolicy: IfNotPresent
+              name: silence
+              ports: []
+              stdin: false
+              tty: false
+              volumeMounts:
+                - mountPath: /etc/ssl/certs/serving-certs/
+                  name: ca-bundle
+                  readOnly: true
+                - mountPath: /usr/local/bin/silence
+                  name: scripts
+                  readOnly: true
+                  subPath: silence
+          nodeSelector:
+            node-role.kubernetes.io/infra: ''
+          priorityClassName: system-cluster-critical
+          restartPolicy: Never
+          serviceAccountName: maintenance-silence
+          volumes:
+            - configMap:
+                defaultMode: 360
+                name: maintenance-silence
+              name: scripts
+            - configMap:
+                defaultMode: 288
+                name: maintenance-silence-certs
+              name: ca-bundle
