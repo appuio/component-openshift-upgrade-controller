@@ -44,6 +44,7 @@ parameters:
       alert_matchers: {}
       silence_timeout_hours: 12
       silence_after_finish_minutes: 30
+      handle_delayed_worker_pools: false
       additional_job_configuration:
         metadata: {}
         spec:

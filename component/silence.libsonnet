@@ -81,13 +81,20 @@ local certcm = kube.ConfigMap('maintenance-silence-certs') + namespace {
   data:: {},
 };
 
+local events = if params.upgrade_silence.handle_delayed_worker_pools then [
+  'Start',
+  'UpgradeComplete',
+  'MachineConfigPoolUnpause',
+  'Finish',
+] else [
+  'Start',
+  'Finish',
+];
+
 local ujh = kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', 'maintenance-silence') + namespace {
   spec+: {
     selector: params.upgrade_silence.upgrade_job_selector,
-    events: [
-      'Start',
-      'Finish',
-    ],
+    events: events,
     template+: {
       spec+: {
         template+: {
