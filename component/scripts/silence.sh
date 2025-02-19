@@ -4,7 +4,7 @@ set -xeuo pipefail
 job_name="$JOB_metadata_name"
 
 if [ "${EVENT_name}" = "\"MachineConfigPoolUnpause\"" ] && [ "${EVENT_reason}" = "\"Completed\"" ]; then
-  echo "Not creating a new silence when unpausing MCPs due to timeout"
+  echo "Upgrade completed without MCP upgrade. Not creating a new silence when unpausing MCPs."
   exit 0
 fi
 
