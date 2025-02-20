@@ -139,6 +139,8 @@ metadata:
 spec:
   events:
     - Start
+    - UpgradeComplete
+    - MachineConfigPoolUnpause
     - Finish
   selector:
     matchLabels:

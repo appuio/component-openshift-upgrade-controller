@@ -1,0 +1,1044 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+    controller-gen.kubebuilder.io/version: v0.17.2
+  labels:
+    app.kubernetes.io/managed-by: commodore
+  name: clusterversions.managedupgrade.appuio.io
+spec:
+  group: managedupgrade.appuio.io
+  names:
+    kind: ClusterVersion
+    listKind: ClusterVersionList
+    plural: clusterversions
+    singular: clusterversion
+  scope: Namespaced
+  versions:
+  - name: v1beta1
+    schema:
+      openAPIV3Schema:
+        description: ClusterVersion is the Schema for the clusterversions API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterVersionSpec defines the desired state of ClusterVersion
+            properties:
+              overlays:
+                description: |-
+                  Overlays are the overlays applied to the base ClusterVersion object at the time specified in the From field.
+                  Overlays do not combine, the overlay with the latest From timestamp is applied.
+                  If two overlays have the same From timestamp, the behavior is undefined.
+                  Overlays can't remove fields from the base ClusterVersion object.
+                  You can work around this by setting the field to an empty value in the base ClusterVersion and applying an overlay in the past with the field set;
+                  this allows the next overlay to remove the field.
+                items:
+                  description: ClusterVersionOverlayConfig defines the overlay applied
+                    to the base ClusterVersion object.
+                  properties:
+                    from:
+                      description: From is the time from which the overlay is applied.
+                      format: date-time
+                      type: string
+                    overlay:
+                      description: Overlay is the overlay applied to the base ClusterVersion
+                        object
+                      properties:
+                        spec:
+                          description: Spec is the spec overlaid to the base ClusterVersion
+                            object
+                          properties:
+                            capabilities:
+                              description: |-
+                                capabilities configures the installation of optional, core
+                                cluster components.  A null value here is identical to an
+                                empty object; see the child properties for default semantics.
+                              properties:
+                                additionalEnabledCapabilities:
+                                  description: |-
+                                    additionalEnabledCapabilities extends the set of managed
+                                    capabilities beyond the baseline defined in
+                                    baselineCapabilitySet.  The default is an empty set.
+                                  items:
+                                    description: ClusterVersionCapability enumerates
+                                      optional, core cluster components.
+                                    enum:
+                                    - openshift-samples
+                                    - baremetal
+                                    - marketplace
+                                    - Console
+                                    - Insights
+                                    - Storage
+                                    - CSISnapshot
+                                    - NodeTuning
+                                    - MachineAPI
+                                    - Build
+                                    - DeploymentConfig
+                                    - ImageRegistry
+                                    - OperatorLifecycleManager
+                                    - CloudCredential
+                                    type: string
+                                  type: array
+                                  x-kubernetes-list-type: atomic
+                                baselineCapabilitySet:
+                                  description: |-
+                                    baselineCapabilitySet selects an initial set of
+                                    optional capabilities to enable, which can be extended via
+                                    additionalEnabledCapabilities.  If unset, the cluster will
+                                    choose a default, and the default may change over time.
+                                    The current default is vCurrent.
+                                  enum:
+                                  - None
+                                  - v4.11
+                                  - v4.12
+                                  - v4.13
+                                  - v4.14
+                                  - v4.15
+                                  - vCurrent
+                                  type: string
+                              type: object
+                            channel:
+                              description: |-
+                                channel is an identifier for explicitly requesting that a non-default
+                                set of updates be applied to this cluster. The default channel will be
+                                contain stable updates that are appropriate for production clusters.
+                              type: string
+                            clusterID:
+                              description: |-
+                                clusterID uniquely identifies this cluster. This is expected to be
+                                an RFC4122 UUID value (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx in
+                                hexadecimal values).
+                              type: string
+                            desiredUpdate:
+                              description: |-
+                                desiredUpdate is an optional field that indicates the desired value of
+                                the cluster version. Setting this value will trigger an upgrade (if
+                                the current version does not match the desired version). The set of
+                                recommended update values is listed as part of available updates in
+                                status, and setting values outside that range may cause the upgrade
+                                to fail. You may specify the version field without setting image if
+                                an update exists with that version in the availableUpdates or history.
+
+                                If an upgrade fails the operator will halt and report status
+                                about the failing component. Setting the desired update value back to
+                                the previous version will cause a rollback to be attempted. Not all
+                                rollbacks will succeed.
+                              properties:
+                                architecture:
+                                  description: |-
+                                    architecture is an optional field that indicates the desired
+                                    value of the cluster architecture. In this context cluster
+                                    architecture means either a single architecture or a multi
+                                    architecture. architecture can only be set to Multi thereby
+                                    only allowing updates from single to multi architecture. If
+                                    architecture is set, image cannot be set and version must be
+                                    set.
+                                    Valid values are 'Multi' and empty.
+                                  enum:
+                                  - Multi
+                                  - ""
+                                  type: string
+                                force:
+                                  description: |-
+                                    force allows an administrator to update to an image that has failed
+                                    verification or upgradeable checks. This option should only
+                                    be used when the authenticity of the provided image has been verified out
+                                    of band because the provided image will run with full administrative access
+                                    to the cluster. Do not use this flag with images that comes from unknown
+                                    or potentially malicious sources.
+                                  type: boolean
+                                image:
+                                  description: |-
+                                    image is a container image location that contains the update.
+                                    image should be used when the desired version does not exist in availableUpdates or history.
+                                    When image is set, version is ignored. When image is set, version should be empty.
+                                    When image is set, architecture cannot be specified.
+                                  type: string
+                                version:
+                                  description: |-
+                                    version is a semantic version identifying the update version.
+                                    version is ignored if image is specified and required if
+                                    architecture is specified.
+                                  type: string
+                              type: object
+                              x-kubernetes-validations:
+                              - message: cannot set both Architecture and Image
+                                rule: 'has(self.architecture) && has(self.image) ?
+                                  (self.architecture == '''' || self.image == '''')
+                                  : true'
+                              - message: Version must be set if Architecture is set
+                                rule: 'has(self.architecture) && self.architecture
+                                  != '''' ? self.version != '''' : true'
+                            overrides:
+                              description: |-
+                                overrides is list of overides for components that are managed by
+                                cluster version operator. Marking a component unmanaged will prevent
+                                the operator from creating or updating the object.
+                              items:
+                                description: |-
+                                  ComponentOverride allows overriding cluster version operator's behavior
+                                  for a component.
+                                properties:
+                                  group:
+                                    description: group identifies the API group that
+                                      the kind is in.
+                                    type: string
+                                  kind:
+                                    description: kind indentifies which object to
+                                      override.
+                                    type: string
+                                  name:
+                                    description: name is the component's name.
+                                    type: string
+                                  namespace:
+                                    description: |-
+                                      namespace is the component's namespace. If the resource is cluster
+                                      scoped, the namespace should be empty.
+                                    type: string
+                                  unmanaged:
+                                    description: |-
+                                      unmanaged controls if cluster version operator should stop managing the
+                                      resources in this cluster.
+                                      Default: false
+                                    type: boolean
+                                required:
+                                - group
+                                - kind
+                                - name
+                                - namespace
+                                - unmanaged
+                                type: object
+                              type: array
+                            signatureStores:
+                              description: |-
+                                signatureStores contains the upstream URIs to verify release signatures and optional
+                                reference to a config map by name containing the PEM-encoded CA bundle.
+
+                                By default, CVO will use existing signature stores if this property is empty.
+                                The CVO will check the release signatures in the local ConfigMaps first. It will search for a valid signature
+                                in these stores in parallel only when local ConfigMaps did not include a valid signature.
+                                Validation will fail if none of the signature stores reply with valid signature before timeout.
+                                Setting signatureStores will replace the default signature stores with custom signature stores.
+                                Default stores can be used with custom signature stores by adding them manually.
+
+                                A maximum of 32 signature stores may be configured.
+                              items:
+                                description: SignatureStore represents the URL of
+                                  custom Signature Store
+                                properties:
+                                  ca:
+                                    description: |-
+                                      ca is an optional reference to a config map by name containing the PEM-encoded CA bundle.
+                                      It is used as a trust anchor to validate the TLS certificate presented by the remote server.
+                                      The key "ca.crt" is used to locate the data.
+                                      If specified and the config map or expected key is not found, the signature store is not honored.
+                                      If the specified ca data is not valid, the signature store is not honored.
+                                      If empty, we fall back to the CA configured via Proxy, which is appended to the default system roots.
+                                      The namespace for this config map is openshift-config.
+                                    properties:
+                                      name:
+                                        description: name is the metadata.name of
+                                          the referenced config map
+                                        type: string
+                                    required:
+                                    - name
+                                    type: object
+                                  url:
+                                    description: |-
+                                      url contains the upstream custom signature store URL.
+                                      url should be a valid absolute http/https URI of an upstream signature store as per rfc1738.
+                                      This must be provided and cannot be empty.
+                                    type: string
+                                    x-kubernetes-validations:
+                                    - message: url must be a valid absolute URL
+                                      rule: isURL(self)
+                                required:
+                                - url
+                                type: object
+                              maxItems: 32
+                              type: array
+                              x-kubernetes-list-map-keys:
+                              - url
+                              x-kubernetes-list-type: map
+                            upstream:
+                              description: |-
+                                upstream may be used to specify the preferred update server. By default
+                                it will use the appropriate update server for the cluster and region.
+                              type: string
+                          type: object
+                      type: object
+                  required:
+                  - from
+                  - overlay
+                  type: object
+                type: array
+              template:
+                description: Template is the template applied to the ClusterVersion
+                  object
+                properties:
+                  spec:
+                    description: Spec is the spec applied to the ClusterVersion object
+                    properties:
+                      capabilities:
+                        description: |-
+                          capabilities configures the installation of optional, core
+                          cluster components.  A null value here is identical to an
+                          empty object; see the child properties for default semantics.
+                        properties:
+                          additionalEnabledCapabilities:
+                            description: |-
+                              additionalEnabledCapabilities extends the set of managed
+                              capabilities beyond the baseline defined in
+                              baselineCapabilitySet.  The default is an empty set.
+                            items:
+                              description: ClusterVersionCapability enumerates optional,
+                                core cluster components.
+                              enum:
+                              - openshift-samples
+                              - baremetal
+                              - marketplace
+                              - Console
+                              - Insights
+                              - Storage
+                              - CSISnapshot
+                              - NodeTuning
+                              - MachineAPI
+                              - Build
+                              - DeploymentConfig
+                              - ImageRegistry
+                              - OperatorLifecycleManager
+                              - CloudCredential
+                              type: string
+                            type: array
+                            x-kubernetes-list-type: atomic
+                          baselineCapabilitySet:
+                            description: |-
+                              baselineCapabilitySet selects an initial set of
+                              optional capabilities to enable, which can be extended via
+                              additionalEnabledCapabilities.  If unset, the cluster will
+                              choose a default, and the default may change over time.
+                              The current default is vCurrent.
+                            enum:
+                            - None
+                            - v4.11
+                            - v4.12
+                            - v4.13
+                            - v4.14
+                            - v4.15
+                            - vCurrent
+                            type: string
+                        type: object
+                      channel:
+                        description: |-
+                          channel is an identifier for explicitly requesting that a non-default
+                          set of updates be applied to this cluster. The default channel will be
+                          contain stable updates that are appropriate for production clusters.
+                        type: string
+                      clusterID:
+                        description: |-
+                          clusterID uniquely identifies this cluster. This is expected to be
+                          an RFC4122 UUID value (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx in
+                          hexadecimal values). This is a required field.
+                        type: string
+                      desiredUpdate:
+                        description: |-
+                          desiredUpdate is an optional field that indicates the desired value of
+                          the cluster version. Setting this value will trigger an upgrade (if
+                          the current version does not match the desired version). The set of
+                          recommended update values is listed as part of available updates in
+                          status, and setting values outside that range may cause the upgrade
+                          to fail.
+
+                          Some of the fields are inter-related with restrictions and meanings described here.
+                          1. image is specified, version is specified, architecture is specified. API validation error.
+                          2. image is specified, version is specified, architecture is not specified. You should not do this. version is silently ignored and image is used.
+                          3. image is specified, version is not specified, architecture is specified. API validation error.
+                          4. image is specified, version is not specified, architecture is not specified. image is used.
+                          5. image is not specified, version is specified, architecture is specified. version and desired architecture are used to select an image.
+                          6. image is not specified, version is specified, architecture is not specified. version and current architecture are used to select an image.
+                          7. image is not specified, version is not specified, architecture is specified. API validation error.
+                          8. image is not specified, version is not specified, architecture is not specified. API validation error.
+
+                          If an upgrade fails the operator will halt and report status
+                          about the failing component. Setting the desired update value back to
+                          the previous version will cause a rollback to be attempted. Not all
+                          rollbacks will succeed.
+                        properties:
+                          architecture:
+                            description: |-
+                              architecture is an optional field that indicates the desired
+                              value of the cluster architecture. In this context cluster
+                              architecture means either a single architecture or a multi
+                              architecture. architecture can only be set to Multi thereby
+                              only allowing updates from single to multi architecture. If
+                              architecture is set, image cannot be set and version must be
+                              set.
+                              Valid values are 'Multi' and empty.
+                            enum:
+                            - Multi
+                            - ""
+                            type: string
+                          force:
+                            description: |-
+                              force allows an administrator to update to an image that has failed
+                              verification or upgradeable checks. This option should only
+                              be used when the authenticity of the provided image has been verified out
+                              of band because the provided image will run with full administrative access
+                              to the cluster. Do not use this flag with images that comes from unknown
+                              or potentially malicious sources.
+                            type: boolean
+                          image:
+                            description: |-
+                              image is a container image location that contains the update.
+                              image should be used when the desired version does not exist in availableUpdates or history.
+                              When image is set, version is ignored. When image is set, version should be empty.
+                              When image is set, architecture cannot be specified.
+                            type: string
+                          version:
+                            description: |-
+                              version is a semantic version identifying the update version.
+                              version is ignored if image is specified and required if
+                              architecture is specified.
+                            type: string
+                        type: object
+                        x-kubernetes-validations:
+                        - message: cannot set both Architecture and Image
+                          rule: 'has(self.architecture) && has(self.image) ? (self.architecture
+                            == '''' || self.image == '''') : true'
+                        - message: Version must be set if Architecture is set
+                          rule: 'has(self.architecture) && self.architecture != ''''
+                            ? self.version != '''' : true'
+                      overrides:
+                        description: |-
+                          overrides is list of overides for components that are managed by
+                          cluster version operator. Marking a component unmanaged will prevent
+                          the operator from creating or updating the object.
+                        items:
+                          description: |-
+                            ComponentOverride allows overriding cluster version operator's behavior
+                            for a component.
+                          properties:
+                            group:
+                              description: group identifies the API group that the
+                                kind is in.
+                              type: string
+                            kind:
+                              description: kind indentifies which object to override.
+                              type: string
+                            name:
+                              description: name is the component's name.
+                              type: string
+                            namespace:
+                              description: |-
+                                namespace is the component's namespace. If the resource is cluster
+                                scoped, the namespace should be empty.
+                              type: string
+                            unmanaged:
+                              description: |-
+                                unmanaged controls if cluster version operator should stop managing the
+                                resources in this cluster.
+                                Default: false
+                              type: boolean
+                          required:
+                          - group
+                          - kind
+                          - name
+                          - namespace
+                          - unmanaged
+                          type: object
+                        type: array
+                        x-kubernetes-list-map-keys:
+                        - kind
+                        - group
+                        - namespace
+                        - name
+                        x-kubernetes-list-type: map
+                      signatureStores:
+                        description: |-
+                          signatureStores contains the upstream URIs to verify release signatures and optional
+                          reference to a config map by name containing the PEM-encoded CA bundle.
+
+                          By default, CVO will use existing signature stores if this property is empty.
+                          The CVO will check the release signatures in the local ConfigMaps first. It will search for a valid signature
+                          in these stores in parallel only when local ConfigMaps did not include a valid signature.
+                          Validation will fail if none of the signature stores reply with valid signature before timeout.
+                          Setting signatureStores will replace the default signature stores with custom signature stores.
+                          Default stores can be used with custom signature stores by adding them manually.
+
+                          A maximum of 32 signature stores may be configured.
+                        items:
+                          description: SignatureStore represents the URL of custom
+                            Signature Store
+                          properties:
+                            ca:
+                              description: |-
+                                ca is an optional reference to a config map by name containing the PEM-encoded CA bundle.
+                                It is used as a trust anchor to validate the TLS certificate presented by the remote server.
+                                The key "ca.crt" is used to locate the data.
+                                If specified and the config map or expected key is not found, the signature store is not honored.
+                                If the specified ca data is not valid, the signature store is not honored.
+                                If empty, we fall back to the CA configured via Proxy, which is appended to the default system roots.
+                                The namespace for this config map is openshift-config.
+                              properties:
+                                name:
+                                  description: name is the metadata.name of the referenced
+                                    config map
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            url:
+                              description: |-
+                                url contains the upstream custom signature store URL.
+                                url should be a valid absolute http/https URI of an upstream signature store as per rfc1738.
+                                This must be provided and cannot be empty.
+                              type: string
+                              x-kubernetes-validations:
+                              - message: url must be a valid absolute URL
+                                rule: isURL(self)
+                          required:
+                          - url
+                          type: object
+                        maxItems: 32
+                        type: array
+                        x-kubernetes-list-map-keys:
+                        - url
+                        x-kubernetes-list-type: map
+                      upstream:
+                        description: |-
+                          upstream may be used to specify the preferred update server. By default
+                          it will use the appropriate update server for the cluster and region.
+                        type: string
+                    required:
+                    - clusterID
+                    type: object
+                type: object
+            type: object
+          status:
+            description: ClusterVersionStatus defines the observed state of ClusterVersion
+            properties:
+              current:
+                description: Current is the ClusterVersion object that is currently
+                  applied.
+                properties:
+                  capabilities:
+                    description: |-
+                      capabilities configures the installation of optional, core
+                      cluster components.  A null value here is identical to an
+                      empty object; see the child properties for default semantics.
+                    properties:
+                      additionalEnabledCapabilities:
+                        description: |-
+                          additionalEnabledCapabilities extends the set of managed
+                          capabilities beyond the baseline defined in
+                          baselineCapabilitySet.  The default is an empty set.
+                        items:
+                          description: ClusterVersionCapability enumerates optional,
+                            core cluster components.
+                          enum:
+                          - openshift-samples
+                          - baremetal
+                          - marketplace
+                          - Console
+                          - Insights
+                          - Storage
+                          - CSISnapshot
+                          - NodeTuning
+                          - MachineAPI
+                          - Build
+                          - DeploymentConfig
+                          - ImageRegistry
+                          - OperatorLifecycleManager
+                          - CloudCredential
+                          type: string
+                        type: array
+                        x-kubernetes-list-type: atomic
+                      baselineCapabilitySet:
+                        description: |-
+                          baselineCapabilitySet selects an initial set of
+                          optional capabilities to enable, which can be extended via
+                          additionalEnabledCapabilities.  If unset, the cluster will
+                          choose a default, and the default may change over time.
+                          The current default is vCurrent.
+                        enum:
+                        - None
+                        - v4.11
+                        - v4.12
+                        - v4.13
+                        - v4.14
+                        - v4.15
+                        - vCurrent
+                        type: string
+                    type: object
+                  channel:
+                    description: |-
+                      channel is an identifier for explicitly requesting that a non-default
+                      set of updates be applied to this cluster. The default channel will be
+                      contain stable updates that are appropriate for production clusters.
+                    type: string
+                  clusterID:
+                    description: |-
+                      clusterID uniquely identifies this cluster. This is expected to be
+                      an RFC4122 UUID value (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx in
+                      hexadecimal values). This is a required field.
+                    type: string
+                  desiredUpdate:
+                    description: |-
+                      desiredUpdate is an optional field that indicates the desired value of
+                      the cluster version. Setting this value will trigger an upgrade (if
+                      the current version does not match the desired version). The set of
+                      recommended update values is listed as part of available updates in
+                      status, and setting values outside that range may cause the upgrade
+                      to fail.
+
+                      Some of the fields are inter-related with restrictions and meanings described here.
+                      1. image is specified, version is specified, architecture is specified. API validation error.
+                      2. image is specified, version is specified, architecture is not specified. You should not do this. version is silently ignored and image is used.
+                      3. image is specified, version is not specified, architecture is specified. API validation error.
+                      4. image is specified, version is not specified, architecture is not specified. image is used.
+                      5. image is not specified, version is specified, architecture is specified. version and desired architecture are used to select an image.
+                      6. image is not specified, version is specified, architecture is not specified. version and current architecture are used to select an image.
+                      7. image is not specified, version is not specified, architecture is specified. API validation error.
+                      8. image is not specified, version is not specified, architecture is not specified. API validation error.
+
+                      If an upgrade fails the operator will halt and report status
+                      about the failing component. Setting the desired update value back to
+                      the previous version will cause a rollback to be attempted. Not all
+                      rollbacks will succeed.
+                    properties:
+                      architecture:
+                        description: |-
+                          architecture is an optional field that indicates the desired
+                          value of the cluster architecture. In this context cluster
+                          architecture means either a single architecture or a multi
+                          architecture. architecture can only be set to Multi thereby
+                          only allowing updates from single to multi architecture. If
+                          architecture is set, image cannot be set and version must be
+                          set.
+                          Valid values are 'Multi' and empty.
+                        enum:
+                        - Multi
+                        - ""
+                        type: string
+                      force:
+                        description: |-
+                          force allows an administrator to update to an image that has failed
+                          verification or upgradeable checks. This option should only
+                          be used when the authenticity of the provided image has been verified out
+                          of band because the provided image will run with full administrative access
+                          to the cluster. Do not use this flag with images that comes from unknown
+                          or potentially malicious sources.
+                        type: boolean
+                      image:
+                        description: |-
+                          image is a container image location that contains the update.
+                          image should be used when the desired version does not exist in availableUpdates or history.
+                          When image is set, version is ignored. When image is set, version should be empty.
+                          When image is set, architecture cannot be specified.
+                        type: string
+                      version:
+                        description: |-
+                          version is a semantic version identifying the update version.
+                          version is ignored if image is specified and required if
+                          architecture is specified.
+                        type: string
+                    type: object
+                    x-kubernetes-validations:
+                    - message: cannot set both Architecture and Image
+                      rule: 'has(self.architecture) && has(self.image) ? (self.architecture
+                        == '''' || self.image == '''') : true'
+                    - message: Version must be set if Architecture is set
+                      rule: 'has(self.architecture) && self.architecture != '''' ?
+                        self.version != '''' : true'
+                  overrides:
+                    description: |-
+                      overrides is list of overides for components that are managed by
+                      cluster version operator. Marking a component unmanaged will prevent
+                      the operator from creating or updating the object.
+                    items:
+                      description: |-
+                        ComponentOverride allows overriding cluster version operator's behavior
+                        for a component.
+                      properties:
+                        group:
+                          description: group identifies the API group that the kind
+                            is in.
+                          type: string
+                        kind:
+                          description: kind indentifies which object to override.
+                          type: string
+                        name:
+                          description: name is the component's name.
+                          type: string
+                        namespace:
+                          description: |-
+                            namespace is the component's namespace. If the resource is cluster
+                            scoped, the namespace should be empty.
+                          type: string
+                        unmanaged:
+                          description: |-
+                            unmanaged controls if cluster version operator should stop managing the
+                            resources in this cluster.
+                            Default: false
+                          type: boolean
+                      required:
+                      - group
+                      - kind
+                      - name
+                      - namespace
+                      - unmanaged
+                      type: object
+                    type: array
+                    x-kubernetes-list-map-keys:
+                    - kind
+                    - group
+                    - namespace
+                    - name
+                    x-kubernetes-list-type: map
+                  signatureStores:
+                    description: |-
+                      signatureStores contains the upstream URIs to verify release signatures and optional
+                      reference to a config map by name containing the PEM-encoded CA bundle.
+
+                      By default, CVO will use existing signature stores if this property is empty.
+                      The CVO will check the release signatures in the local ConfigMaps first. It will search for a valid signature
+                      in these stores in parallel only when local ConfigMaps did not include a valid signature.
+                      Validation will fail if none of the signature stores reply with valid signature before timeout.
+                      Setting signatureStores will replace the default signature stores with custom signature stores.
+                      Default stores can be used with custom signature stores by adding them manually.
+
+                      A maximum of 32 signature stores may be configured.
+                    items:
+                      description: SignatureStore represents the URL of custom Signature
+                        Store
+                      properties:
+                        ca:
+                          description: |-
+                            ca is an optional reference to a config map by name containing the PEM-encoded CA bundle.
+                            It is used as a trust anchor to validate the TLS certificate presented by the remote server.
+                            The key "ca.crt" is used to locate the data.
+                            If specified and the config map or expected key is not found, the signature store is not honored.
+                            If the specified ca data is not valid, the signature store is not honored.
+                            If empty, we fall back to the CA configured via Proxy, which is appended to the default system roots.
+                            The namespace for this config map is openshift-config.
+                          properties:
+                            name:
+                              description: name is the metadata.name of the referenced
+                                config map
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        url:
+                          description: |-
+                            url contains the upstream custom signature store URL.
+                            url should be a valid absolute http/https URI of an upstream signature store as per rfc1738.
+                            This must be provided and cannot be empty.
+                          type: string
+                          x-kubernetes-validations:
+                          - message: url must be a valid absolute URL
+                            rule: isURL(self)
+                      required:
+                      - url
+                      type: object
+                    maxItems: 32
+                    type: array
+                    x-kubernetes-list-map-keys:
+                    - url
+                    x-kubernetes-list-type: map
+                  upstream:
+                    description: |-
+                      upstream may be used to specify the preferred update server. By default
+                      it will use the appropriate update server for the cluster and region.
+                    type: string
+                required:
+                - clusterID
+                type: object
+              overlayApplied:
+                description: OverlayApplied is the from timestamp of the currently
+                  applied overlay
+                format: date-time
+                type: string
+              overlays:
+                description: Overlays shows the ClusterVersion objects that will be
+                  applied if their From timestamp is reached.
+                items:
+                  description: ClusterVersionStatusOverlays defines the ClusterVersion
+                    objects that will be applied if their From timestamp is reached.
+                  properties:
+                    from:
+                      description: From is the time from which this preview will be
+                        applied.
+                      format: date-time
+                      type: string
+                    preview:
+                      description: Preview is the spec applied to the ClusterVersion
+                        object at the time of From.
+                      properties:
+                        spec:
+                          description: Spec is the spec applied to the ClusterVersion
+                            object
+                          properties:
+                            capabilities:
+                              description: |-
+                                capabilities configures the installation of optional, core
+                                cluster components.  A null value here is identical to an
+                                empty object; see the child properties for default semantics.
+                              properties:
+                                additionalEnabledCapabilities:
+                                  description: |-
+                                    additionalEnabledCapabilities extends the set of managed
+                                    capabilities beyond the baseline defined in
+                                    baselineCapabilitySet.  The default is an empty set.
+                                  items:
+                                    description: ClusterVersionCapability enumerates
+                                      optional, core cluster components.
+                                    enum:
+                                    - openshift-samples
+                                    - baremetal
+                                    - marketplace
+                                    - Console
+                                    - Insights
+                                    - Storage
+                                    - CSISnapshot
+                                    - NodeTuning
+                                    - MachineAPI
+                                    - Build
+                                    - DeploymentConfig
+                                    - ImageRegistry
+                                    - OperatorLifecycleManager
+                                    - CloudCredential
+                                    type: string
+                                  type: array
+                                  x-kubernetes-list-type: atomic
+                                baselineCapabilitySet:
+                                  description: |-
+                                    baselineCapabilitySet selects an initial set of
+                                    optional capabilities to enable, which can be extended via
+                                    additionalEnabledCapabilities.  If unset, the cluster will
+                                    choose a default, and the default may change over time.
+                                    The current default is vCurrent.
+                                  enum:
+                                  - None
+                                  - v4.11
+                                  - v4.12
+                                  - v4.13
+                                  - v4.14
+                                  - v4.15
+                                  - vCurrent
+                                  type: string
+                              type: object
+                            channel:
+                              description: |-
+                                channel is an identifier for explicitly requesting that a non-default
+                                set of updates be applied to this cluster. The default channel will be
+                                contain stable updates that are appropriate for production clusters.
+                              type: string
+                            clusterID:
+                              description: |-
+                                clusterID uniquely identifies this cluster. This is expected to be
+                                an RFC4122 UUID value (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx in
+                                hexadecimal values). This is a required field.
+                              type: string
+                            desiredUpdate:
+                              description: |-
+                                desiredUpdate is an optional field that indicates the desired value of
+                                the cluster version. Setting this value will trigger an upgrade (if
+                                the current version does not match the desired version). The set of
+                                recommended update values is listed as part of available updates in
+                                status, and setting values outside that range may cause the upgrade
+                                to fail.
+
+                                Some of the fields are inter-related with restrictions and meanings described here.
+                                1. image is specified, version is specified, architecture is specified. API validation error.
+                                2. image is specified, version is specified, architecture is not specified. You should not do this. version is silently ignored and image is used.
+                                3. image is specified, version is not specified, architecture is specified. API validation error.
+                                4. image is specified, version is not specified, architecture is not specified. image is used.
+                                5. image is not specified, version is specified, architecture is specified. version and desired architecture are used to select an image.
+                                6. image is not specified, version is specified, architecture is not specified. version and current architecture are used to select an image.
+                                7. image is not specified, version is not specified, architecture is specified. API validation error.
+                                8. image is not specified, version is not specified, architecture is not specified. API validation error.
+
+                                If an upgrade fails the operator will halt and report status
+                                about the failing component. Setting the desired update value back to
+                                the previous version will cause a rollback to be attempted. Not all
+                                rollbacks will succeed.
+                              properties:
+                                architecture:
+                                  description: |-
+                                    architecture is an optional field that indicates the desired
+                                    value of the cluster architecture. In this context cluster
+                                    architecture means either a single architecture or a multi
+                                    architecture. architecture can only be set to Multi thereby
+                                    only allowing updates from single to multi architecture. If
+                                    architecture is set, image cannot be set and version must be
+                                    set.
+                                    Valid values are 'Multi' and empty.
+                                  enum:
+                                  - Multi
+                                  - ""
+                                  type: string
+                                force:
+                                  description: |-
+                                    force allows an administrator to update to an image that has failed
+                                    verification or upgradeable checks. This option should only
+                                    be used when the authenticity of the provided image has been verified out
+                                    of band because the provided image will run with full administrative access
+                                    to the cluster. Do not use this flag with images that comes from unknown
+                                    or potentially malicious sources.
+                                  type: boolean
+                                image:
+                                  description: |-
+                                    image is a container image location that contains the update.
+                                    image should be used when the desired version does not exist in availableUpdates or history.
+                                    When image is set, version is ignored. When image is set, version should be empty.
+                                    When image is set, architecture cannot be specified.
+                                  type: string
+                                version:
+                                  description: |-
+                                    version is a semantic version identifying the update version.
+                                    version is ignored if image is specified and required if
+                                    architecture is specified.
+                                  type: string
+                              type: object
+                              x-kubernetes-validations:
+                              - message: cannot set both Architecture and Image
+                                rule: 'has(self.architecture) && has(self.image) ?
+                                  (self.architecture == '''' || self.image == '''')
+                                  : true'
+                              - message: Version must be set if Architecture is set
+                                rule: 'has(self.architecture) && self.architecture
+                                  != '''' ? self.version != '''' : true'
+                            overrides:
+                              description: |-
+                                overrides is list of overides for components that are managed by
+                                cluster version operator. Marking a component unmanaged will prevent
+                                the operator from creating or updating the object.
+                              items:
+                                description: |-
+                                  ComponentOverride allows overriding cluster version operator's behavior
+                                  for a component.
+                                properties:
+                                  group:
+                                    description: group identifies the API group that
+                                      the kind is in.
+                                    type: string
+                                  kind:
+                                    description: kind indentifies which object to
+                                      override.
+                                    type: string
+                                  name:
+                                    description: name is the component's name.
+                                    type: string
+                                  namespace:
+                                    description: |-
+                                      namespace is the component's namespace. If the resource is cluster
+                                      scoped, the namespace should be empty.
+                                    type: string
+                                  unmanaged:
+                                    description: |-
+                                      unmanaged controls if cluster version operator should stop managing the
+                                      resources in this cluster.
+                                      Default: false
+                                    type: boolean
+                                required:
+                                - group
+                                - kind
+                                - name
+                                - namespace
+                                - unmanaged
+                                type: object
+                              type: array
+                              x-kubernetes-list-map-keys:
+                              - kind
+                              - group
+                              - namespace
+                              - name
+                              x-kubernetes-list-type: map
+                            signatureStores:
+                              description: |-
+                                signatureStores contains the upstream URIs to verify release signatures and optional
+                                reference to a config map by name containing the PEM-encoded CA bundle.
+
+                                By default, CVO will use existing signature stores if this property is empty.
+                                The CVO will check the release signatures in the local ConfigMaps first. It will search for a valid signature
+                                in these stores in parallel only when local ConfigMaps did not include a valid signature.
+                                Validation will fail if none of the signature stores reply with valid signature before timeout.
+                                Setting signatureStores will replace the default signature stores with custom signature stores.
+                                Default stores can be used with custom signature stores by adding them manually.
+
+                                A maximum of 32 signature stores may be configured.
+                              items:
+                                description: SignatureStore represents the URL of
+                                  custom Signature Store
+                                properties:
+                                  ca:
+                                    description: |-
+                                      ca is an optional reference to a config map by name containing the PEM-encoded CA bundle.
+                                      It is used as a trust anchor to validate the TLS certificate presented by the remote server.
+                                      The key "ca.crt" is used to locate the data.
+                                      If specified and the config map or expected key is not found, the signature store is not honored.
+                                      If the specified ca data is not valid, the signature store is not honored.
+                                      If empty, we fall back to the CA configured via Proxy, which is appended to the default system roots.
+                                      The namespace for this config map is openshift-config.
+                                    properties:
+                                      name:
+                                        description: name is the metadata.name of
+                                          the referenced config map
+                                        type: string
+                                    required:
+                                    - name
+                                    type: object
+                                  url:
+                                    description: |-
+                                      url contains the upstream custom signature store URL.
+                                      url should be a valid absolute http/https URI of an upstream signature store as per rfc1738.
+                                      This must be provided and cannot be empty.
+                                    type: string
+                                    x-kubernetes-validations:
+                                    - message: url must be a valid absolute URL
+                                      rule: isURL(self)
+                                required:
+                                - url
+                                type: object
+                              maxItems: 32
+                              type: array
+                              x-kubernetes-list-map-keys:
+                              - url
+                              x-kubernetes-list-type: map
+                            upstream:
+                              description: |-
+                                upstream may be used to specify the preferred update server. By default
+                                it will use the appropriate update server for the cluster and region.
+                              type: string
+                          required:
+                          - clusterID
+                          type: object
+                      type: object
+                  required:
+                  - from
+                  type: object
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

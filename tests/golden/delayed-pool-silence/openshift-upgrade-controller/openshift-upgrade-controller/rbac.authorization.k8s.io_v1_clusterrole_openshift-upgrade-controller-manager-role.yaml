@@ -1,0 +1,132 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: commodore
+  name: openshift-upgrade-controller-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - config.openshift.io
+  resources:
+  - clusterversions
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - machine.openshift.io
+  resources:
+  - machines
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - machineconfiguration.openshift.io
+  resources:
+  - machineconfigpools
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - clusterversions
+  - nodeforcedrains
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - clusterversions/finalizers
+  - upgradeconfigs/finalizers
+  - upgradejobs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - clusterversions/status
+  - nodeforcedrains/status
+  - upgradeconfigs/status
+  - upgradejobhooks/status
+  - upgradejobs/status
+  - upgradesuspensionwindows/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradeconfigs
+  - upgradejobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - managedupgrade.appuio.io
+  resources:
+  - upgradejobhooks
+  - upgradesuspensionwindows
+  verbs:
+  - get
+  - list
+  - watch

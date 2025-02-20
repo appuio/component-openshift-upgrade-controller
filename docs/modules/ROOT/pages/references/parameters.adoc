@@ -276,6 +276,26 @@ default:: `30`
 
 The duration to wait after the upgrade job has finished before expiring the silence in minutes.
 
+=== `upgrade_silence.handle_delayed_worker_pools`
+
+[horizontal]
+type:: bool
+default:: `false`
+
+Whether to create separate silences for the initial maintenance and the delayed maintenance of one or more MachineConfigPools.
+
+If set to true, the upgrade silence `UpgradeJobHook` is executed for events `UpgradeComplete` (when the upgrade is complete except for delayed MachineConfigPools) and `MachineConfigPoolUnpause` (when the delayed MachineConfigPool maintenance starts) in addition to the `Start` and `Finish` events.
+
+When the hook script runs for the `UpgradeComplete` event it expires the silence after `upgrade_silence.silence_after_finish_minutes`.
+When the hook script runs for the `MachineConfigPoolUnpause` event it creates a silence which ends after `upgrade_silence.silence_timeout_hours`.
+
+The `Start` and `Finish` logic remains unchanged, the `Finish` run will expire the silence created by the run for `MachineConfigPoolUnpause` when the `handle_delayed_worker_pools` parameter is `true`.
+
+[NOTE]
+====
+Currently, the upgrade-controller doesn't have an event for `MachineConfigPoolComplete`.
+Enabling this parameter may produce undesired silences for configurations which have different delays for multiple delayed MachineConfigPools.
+====
 
 === `upgrade_silence.additional_job_configuration`
 

@@ -1,0 +1,53 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations: {}
+  labels:
+    name: openshift-upgrade-controller
+  name: openshift-upgrade-controller
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  groups:
+    - name: drain.alerts
+      rules:
+        - alert: MaintenanceInProgress
+          annotations:
+            description: Cluster is currently upgrading
+            message: An OpenShift upgrade is in progress on this cluster
+            summary: Cluster is currently upgrading
+          expr: |
+            max(max_over_time(openshift_upgrade_controller_upgradejob_state{state="active"} [10m])) > 0
+          for: 0m
+          labels:
+            Maintenance: 'true'
+            severity: info
+            syn: 'true'
+            syn_component: openshift-upgrade-controller
+        - alert: NodeDrainStuck
+          annotations:
+            description: Node {{$labels.node}} is draining for more than 10 minutes.
+            message: Node {{$labels.node}} is draining for more than 10 minutes.
+            runbook_url: https://hub.syn.tools/openshift-upgrade-controller/runbooks/NodeDrainStuck.html
+            summary: Node is draining for more than 10 minutes.
+          expr: |
+            openshift_upgrade_controller_node_draining == 1
+          for: 15m
+          labels:
+            Maintenance: 'true'
+            severity: warning
+            syn: 'true'
+            syn_component: openshift-upgrade-controller
+        - alert: PausedMachineConfigPool
+          annotations:
+            description: |
+              MachineConfigPool {{$labels.pool}} is paused. A paused MachineConfigPool will likely block the next maintenance.
+            message: MachineConfigPool {{$labels.pool}} is paused.
+            runbook_url: https://hub.syn.tools/openshift-upgrade-controller/runbooks/PausedMachineConfigPool.html
+            summary: Paused MachineConfigPool
+          expr: |
+            group(openshift_upgrade_controller_machine_config_pools_paused > 0) by (pool) unless on() group(openshift_upgrade_controller_upgradejob_state{state=~"active|paused"})
+          for: 2h
+          labels:
+            severity: warning
+            syn: 'true'
+            syn_component: openshift-upgrade-controller
