@@ -28,6 +28,8 @@ local cr = kube.ClusterRole('maintenance-silence-alertmanager-api') + namespace 
         'alertmanagers/api',
       ],
       verbs: [
+        // OpenShift 4.17 alertmanager kube-rbac-proxy checks for `create` verb
+        'create',
         'get',
       ],
     },
