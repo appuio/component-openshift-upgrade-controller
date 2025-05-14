@@ -42,13 +42,98 @@ com.Kustomization(
       newTag: image.tag,
       newName: '%(registry)s/%(image)s' % image,
     },
-    'quay.io/brancz/kube-rbac-proxy': {
-      local image = params.images.kube_rbac_proxy,
-      newTag: image.tag,
-      newName: '%(registry)s/%(image)s' % image,
-    },
   },
   params.kustomize_input {
+    // Inner kustomization layers are immutable, so we need to re-replace the namespace after changing it in an outer layer
+    replacements: [
+      {
+        source: {
+          kind: 'Service',
+          version: 'v1',
+          name: 'controller-manager-metrics-service',
+          fieldPath: 'metadata.name',
+        },
+        targets: [
+          {
+            select: {
+              kind: 'Certificate',
+              group: 'cert-manager.io',
+              version: 'v1',
+              name: 'metrics-certs',
+            },
+            fieldPaths: [
+              'spec.dnsNames.0',
+              'spec.dnsNames.1',
+            ],
+            options: {
+              delimiter: '.',
+              index: 0,
+              create: true,
+            },
+          },
+          {
+            select: {
+              kind: 'ServiceMonitor',
+              group: 'monitoring.coreos.com',
+              version: 'v1',
+              name: 'controller-manager-metrics-monitor',
+            },
+            fieldPaths: [
+              'spec.endpoints.0.tlsConfig.serverName',
+            ],
+            options: {
+              delimiter: '.',
+              index: 0,
+              create: true,
+            },
+          },
+        ],
+      },
+      {
+        source: {
+          kind: 'Service',
+          version: 'v1',
+          name: 'controller-manager-metrics-service',
+          fieldPath: 'metadata.namespace',
+        },
+        targets: [
+          {
+            select: {
+              kind: 'Certificate',
+              group: 'cert-manager.io',
+              version: 'v1',
+              name: 'metrics-certs',
+            },
+            fieldPaths: [
+              'spec.dnsNames.0',
+              'spec.dnsNames.1',
+            ],
+            options: {
+              delimiter: '.',
+              index: 1,
+              create: true,
+            },
+          },
+          {
+            select: {
+              kind: 'ServiceMonitor',
+              group: 'monitoring.coreos.com',
+              version: 'v1',
+              name: 'controller-manager-metrics-monitor',
+            },
+            fieldPaths: [
+              'spec.endpoints.0.tlsConfig.serverName',
+            ],
+            options: {
+              delimiter: '.',
+              index: 1,
+              create: true,
+            },
+          },
+        ],
+      },
+    ],
+
     patches+: [
       patch(removeUpstreamNamespace),
       setPriorityClass,
