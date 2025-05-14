@@ -23,7 +23,19 @@ spec:
     port: https
     scheme: https
     tlsConfig:
-      insecureSkipVerify: true
+      ca:
+        secret:
+          key: ca.crt
+          name: metrics-server-cert
+      cert:
+        secret:
+          key: tls.crt
+          name: metrics-server-cert
+      insecureSkipVerify: false
+      keySecret:
+        key: tls.key
+        name: metrics-server-cert
+      serverName: openshift-upgrade-controller-controller-manager-metrics-service.appuio-openshift-upgrade-controller.svc
   selector:
     matchLabels:
       control-plane: controller-manager
