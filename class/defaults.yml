@@ -13,7 +13,7 @@ parameters:
       openshift_upgrade_controller:
         registry: ghcr.io
         image: appuio/openshift-upgrade-controller
-        tag: v0.15.1
+        tag: v0.16.0
       oc:
         registry: quay.io
         image: appuio/oc
