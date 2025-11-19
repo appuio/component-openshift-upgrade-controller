@@ -1,0 +1,78 @@
+= UpgradeJobFailed
+
+include::partial$runbooks/contribution_note.adoc[]
+
+== icon:glasses[] Overview
+
+This alert fires when a upgrade job has failed.
+
+Machine config pools might still try to apply changes if not paused.
+If the automatic pause on fail is enabled the next maintenance might be blocked.
+
+To clear this alert delete the failed UpgradeJob after investigating the root cause.
+
+[WARNING]
+====
+You might need to unpause the MachineConfigPools if they were automatically paused on upgrade job failure.
+====
+
+== icon:bug[] Steps for debugging
+
+Check the reason given in the alert to understand why the upgrade job has failed.
+
+=== icon:search[] Check for stuck nodes
+
+This alert can indicate that a node is stuck in the reboot process during a maintenance.
+
+Check the xref:runbooks/UpgradeJobFailed.adoc[] handbook for steps on how to debug a stuck node drain process.
+
+=== icon:search[] Check the ClusterVersion for upgrade errors
+
+[source,shell]
+----
+kubectl get clusterversions version -ojson | jq '.status.conditions'
+----
+
+Look for the `ReleaseAccepted`, `Failing`, and `Upgradeable` conditions for more details on the failure.
+
+=== icon:search[] Check the upgrade job hook jobs
+
+[source,shell]
+----
+kubectl -n appuio-openshift-upgrade-controller get jobs | grep -v Complete
+----
+
+Look for any jobs that are not complete and check their logs for errors.
+
+=== icon:wrench[] Pause or unpause Machine Config Pools
+
+If the upgrade job failure has left the Machine Config Pools in an unfinished state you might want to pause or unpause them manually.
+
+[source,shell]
+----
+# List unpaused MCPs
+kubectl get mcp -ojson | jq -r '.items[] | select(.spec.paused == false) | .metadata.name'
+# List paused MCPs
+kubectl get mcp -ojson | jq -r '.items[] | select(.spec.paused) | .metadata.name'
+----
+
+To pause a Machine Config Pool:
+
+[source,shell]
+----
+POOL=XXX
+kubectl --as=system:admin patch mcp $POOL -p '{"spec":{"paused":true}}' --type=merge
+----
+
+To unpause a Machine Config Pool:
+
+[source,shell]
+----
+POOL=XXX
+kubectl --as=system:admin patch mcp $POOL -p '{"spec":{"paused":false}}' --type=merge
+----
+
+== icon:wrench[] Tune
+
+If this alert isn't actionable, noisy, or was raised too early you may want to tune the time until the alert fires.
+You can do this by changing the `for` parameter in the `UpgradeJobFailed` alert configuration.
