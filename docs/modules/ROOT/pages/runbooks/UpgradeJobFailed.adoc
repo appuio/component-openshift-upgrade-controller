@@ -14,6 +14,8 @@ To clear this alert delete the failed UpgradeJob after investigating the root ca
 [WARNING]
 ====
 You might need to unpause the MachineConfigPools if they were automatically paused on upgrade job failure.
+
+However, be aware that unpausing MachineConfigPools may trigger further node reboots.
 ====
 
 == icon:bug[] Steps for debugging
