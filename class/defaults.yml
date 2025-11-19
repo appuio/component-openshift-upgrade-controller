@@ -117,3 +117,22 @@ parameters:
           for: 2h
           labels:
             severity: warning
+      UpgradeJobFailed:
+        enabled: true
+        rule:
+          annotations:
+            description: |
+              UpgradeJob {{$labels.upgradejob}} has failed with reason {{$labels.reason}}.
+
+              Machine config pools might still try to apply changes if not paused.
+              If the automatic pause on fail is enabled the next maintenance might be blocked.
+
+              To clear this alert delete the failed UpgradeJob after investigating the root cause.
+            message: UpgradeJob {{$labels.upgradejob}} has failed.
+            summary: Failed UpgradeJob
+            runbook_url: https://hub.syn.tools/openshift-upgrade-controller/runbooks/UpgradeJobFailed.html
+          expr: |
+            openshift_upgrade_controller_upgradejob_state{state="failed"}
+          for: 1m
+          labels:
+            severity: warning
