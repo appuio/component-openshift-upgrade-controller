@@ -1,4 +1,4 @@
-local kube = import 'lib/kube.libjsonnet';
+local kube = import 'kube-ssa-compat.libsonnet';
 
 local aggregatedRoles = [
   kube.ClusterRole('syn:openshift-upgrade-controller:view') {

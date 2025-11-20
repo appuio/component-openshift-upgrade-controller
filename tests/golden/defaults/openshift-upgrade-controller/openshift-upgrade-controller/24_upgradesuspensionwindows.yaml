@@ -1,7 +1,6 @@
 apiVersion: managedupgrade.appuio.io/v1beta1
 kind: UpgradeSuspensionWindow
 metadata:
-  annotations: {}
   labels:
     name: end-of-year-holidays-2023
   name: end-of-year-holidays-2023

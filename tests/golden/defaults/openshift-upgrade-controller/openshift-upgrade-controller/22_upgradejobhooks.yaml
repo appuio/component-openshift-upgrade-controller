@@ -1,7 +1,6 @@
 apiVersion: managedupgrade.appuio.io/v1beta1
 kind: UpgradeJobHook
 metadata:
-  annotations: {}
   labels:
     name: notify
   name: notify

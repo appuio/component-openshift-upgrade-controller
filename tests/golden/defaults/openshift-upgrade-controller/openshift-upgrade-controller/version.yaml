@@ -1,7 +1,6 @@
 apiVersion: managedupgrade.appuio.io/v1beta1
 kind: ClusterVersion
 metadata:
-  annotations: {}
   labels:
     app.kubernetes.io/managed-by: commodore
     name: version

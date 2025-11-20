@@ -1,7 +1,6 @@
 apiVersion: managedupgrade.appuio.io/v1beta1
 kind: NodeForceDrain
 metadata:
-  annotations: {}
   labels:
     name: node-role-app
   name: node-role-app
