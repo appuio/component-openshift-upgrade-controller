@@ -2,7 +2,6 @@ apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
-  annotations: {}
   labels:
     name: admin-ack
   name: admin-ack
@@ -11,7 +10,6 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {}
   labels:
     name: admin-ack
   name: admin-ack
@@ -55,7 +53,6 @@ data:
     oc -n "$CM_NAMESPACE" patch cm "$CM_NAME" --patch "$patch" --type=merge
 kind: ConfigMap
 metadata:
-  annotations: {}
   labels:
     name: admin-ack
   name: admin-ack
@@ -64,7 +61,6 @@ metadata:
 apiVersion: managedupgrade.appuio.io/v1beta1
 kind: UpgradeJobHook
 metadata:
-  annotations: {}
   labels:
     name: admin-ack
   name: admin-ack

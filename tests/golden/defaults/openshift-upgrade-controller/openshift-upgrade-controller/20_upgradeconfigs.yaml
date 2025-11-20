@@ -1,7 +1,6 @@
 apiVersion: managedupgrade.appuio.io/v1beta1
 kind: UpgradeConfig
 metadata:
-  annotations: {}
   labels:
     name: appuio-monday-afternoon
   name: appuio-monday-afternoon

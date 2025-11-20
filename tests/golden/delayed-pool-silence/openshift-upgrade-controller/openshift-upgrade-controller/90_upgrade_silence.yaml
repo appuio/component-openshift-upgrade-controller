@@ -2,7 +2,6 @@ apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
-  annotations: {}
   labels:
     name: maintenance-silence
   name: maintenance-silence
@@ -11,7 +10,6 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  annotations: {}
   labels:
     name: maintenance-silence-alertmanager-api
   name: maintenance-silence-alertmanager-api
@@ -28,7 +26,6 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {}
   labels:
     name: maintenance-silence
   name: maintenance-silence
@@ -45,7 +42,6 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {}
   labels:
     name: maintenance-silence-alertmanager-api
   name: maintenance-silence-alertmanager-api
@@ -112,7 +108,6 @@ data:
     done <<<"$(printf %s "${SILENCES_JSON}" | jq -cr '.[]')"
 kind: ConfigMap
 metadata:
-  annotations: {}
   labels:
     name: maintenance-silence
   name: maintenance-silence
@@ -131,7 +126,6 @@ metadata:
 apiVersion: managedupgrade.appuio.io/v1beta1
 kind: UpgradeJobHook
 metadata:
-  annotations: {}
   labels:
     name: maintenance-silence
   name: maintenance-silence
