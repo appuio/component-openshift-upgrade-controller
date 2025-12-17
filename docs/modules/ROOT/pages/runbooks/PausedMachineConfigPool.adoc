@@ -13,6 +13,7 @@ Paused machine config pools will likely block the next maintenance and prevent t
 Possible reasons why a MachineConfigPool is paused:
 
 * (likely) An engineer manually paused the MachineConfigPool (e.g. to prevent node reboots)
+* (likely) The previous upgradejob timed out and the upgrade controller paused the MachineConfigPool to prevent node reboots
 * Something went wrong during a delayed upgrade of a MachineConfigPool by the upgrade controller
 * Another operator/component on the cluster paused the MachineConfigPool
 
@@ -29,3 +30,61 @@ If the manager of the field is `kubectl-edit` or `kubectl-patch` and it was rece
 Depending on the reason for pausing, consider to either ensure it is unpaused before the next maintenance or suspending maintenance on the cluster.
 
 If the pool was paused by an operator, look for the reason in the operator logs.
+
+
+=== Unpause the MachineConfigPool after investigation
+
+If the root cause is known and node reboots are acceptable, then the MCPs can be unpaused:
+
+[source,shell]
+----
+for mcp in $(kubectl get mcp -o name); do
+kubectl --as=system:admin patch $mcp --type=merge -p '{"spec":{"paused":false}}'
+done
+----
+
+If node reboots are not acceptable, either find a suitable window with the customer or unpause at the start of the next maintenance with an upgradejob hook.
+
+[source]
+----
+---
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeJobHook
+metadata:
+  name: unpause-mcp
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  events:
+    - Start
+  selector:
+    matchLabels:
+      appuio-managed-upgrade: "true"
+  run: Next
+  template:
+    spec:
+      template:
+        spec:
+          containers:
+            - args:
+                - -c
+                - |
+                  for mcp in $(kubectl get mcp -o name); do
+                    kubectl patch $mcp --type=merge -p '{"spec":{"paused":false}}'
+                  done
+              command:
+                - bash
+              image: quay.io/appuio/oc:v4.19
+              name: unpause-mcp
+              env:
+                - name: HOME
+                  value: /export
+              volumeMounts:
+                - mountPath: /export
+                  name: export
+              workingDir: /export
+          restartPolicy: Never
+          serviceAccountName: openshift-upgrade-controller-controller-manager
+          volumes:
+            - emptyDir: {}
+              name: export
+----
