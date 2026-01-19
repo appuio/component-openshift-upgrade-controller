@@ -17,7 +17,7 @@ parameters:
       oc:
         registry: quay.io
         image: appuio/oc
-        tag: v4.14
+        tag: v4.20
 
     manifests_version: ${openshift_upgrade_controller:images:openshift_upgrade_controller:tag}
 
