@@ -1,0 +1,103 @@
+apiVersion: espejote.io/v1alpha1
+kind: ManagedResource
+metadata:
+  labels:
+    app.kubernetes.io/name: dynamic-pdb-alerts
+  name: dynamic-pdb-alerts
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  context:
+    - name: prometheusrules
+      resource:
+        apiVersion: monitoring.coreos.com/v1
+        kind: PrometheusRule
+    - name: nodeforcedrains
+      resource:
+        apiVersion: managedupgrade.appuio.io/v1beta1
+        kind: NodeForceDrain
+    - name: namespaces
+      resource:
+        apiVersion: v1
+        kind: Namespace
+  serviceAccountRef:
+    name: dynamic-pdb-alerts
+  template: |
+    local esp = import 'espejote.libsonnet';
+
+    local nodeforcedrains = esp.context().nodeforcedrains;
+
+    local nfd_ns_selectors = [
+      std.get(nfd.spec, 'namespaceSelector', {})
+      for nfd in nodeforcedrains
+    ];
+
+    local syn_namespaces = [
+      ns.metadata.name
+      for ns in esp.context().namespaces
+      if std.get(ns.metadata.labels, 'openshift.io/cluster-monitoring', 'false') == 'true'
+    ];
+
+    local include_ns_sel = 'namespace=~"(%s)"' % std.join('|', syn_namespaces);
+
+    local makePdbRules(limitNamespaces) =
+      local ns_sel = if limitNamespaces then
+        include_ns_sel
+      else
+        '';
+      {
+        apiVersion: 'monitoring.coreos.com/v1',
+        kind: 'PrometheusRule',
+        metadata: {
+          name: 'dynamic-pdb-alerts',
+          annotations: {
+            'espejote.io/ignore': 'openshift4-monitoring-rules',
+          },
+        },
+        spec: {
+          groups: [
+            {
+              name: 'pdb.alerts',
+              rules: [
+                {
+                  alert: 'PodDisruptionBudgetAtLimit',
+                  expr: |||
+                    max by (namespace, poddisruptionbudget) (
+                      kube_poddisruptionbudget_status_current_healthy{%(ns_sel)s} == kube_poddisruptionbudget_status_desired_healthy{%(ns_sel)s}
+                      and on (namespace, poddisruptionbudget)
+                      kube_poddisruptionbudget_status_expected_pods{%(ns_sel)s} > 0
+                    )
+                  ||| % { ns_sel: ns_sel },
+                  labels: {
+                    syn: 'true',
+                    severity: 'critical',
+                  },
+                },
+                {
+                  alert: 'PodDisruptionBudgetLimit',
+                  expr: |||
+                    max by(namespace, poddisruptionbudget) (
+                      kube_poddisruptionbudget_status_current_healthy{%(ns_sel)s} < kube_poddisruptionbudget_status_desired_healthy{%(ns_sel)s}
+                    )
+                  ||| % { ns_sel: ns_sel },
+                  labels: {
+                    syn: 'true',
+                    severity: 'warning',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      };
+
+    makePdbRules(std.length(nodeforcedrains) > 0)
+  triggers:
+    - name: prometheusrule
+      watchContextResource:
+        name: prometheusrules
+    - name: nodeforcedrain
+      watchContextResource:
+        name: nodeforcedrains
+    - name: namespaces
+      watchContextResource:
+        name: namespaces

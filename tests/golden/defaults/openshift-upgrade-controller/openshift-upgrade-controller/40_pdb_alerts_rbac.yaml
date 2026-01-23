@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    name: dynamic-pdb-alerts
+  name: dynamic-pdb-alerts
+  namespace: appuio-openshift-upgrade-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    name: dynamic-pdb-alerts
+  name: dynamic-pdb-alerts
+  namespace: appuio-openshift-upgrade-controller
+rules:
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - prometheusrules
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - delete
+      - patch
+  - apiGroups:
+      - managedupgrade.appuio.io
+    resources:
+      - nodeforcedrains
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    name: dynamic-pdb-alerts
+  name: dynamic-pdb-alerts
+  namespace: appuio-openshift-upgrade-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dynamic-pdb-alerts
+subjects:
+  - kind: ServiceAccount
+    name: dynamic-pdb-alerts
+    namespace: appuio-openshift-upgrade-controller
