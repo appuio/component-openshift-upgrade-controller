@@ -16,9 +16,11 @@ local aggregatedRoles = [
         apiGroups: [ api.apiGroup ],
         resources: [
           'clusterversions',
+          'nodeforcedrains',
           'upgradeconfigs',
           'upgradejobs',
           'upgradejobhooks',
+          'upgradesuspensionwindows',
         ],
         verbs: [
           'get',
@@ -40,9 +42,11 @@ local aggregatedRoles = [
         apiGroups: [ api.apiGroup ],
         resources: [
           'clusterversions',
+          'nodeforcedrains',
           'upgradeconfigs',
           'upgradejobs',
           'upgradejobhooks',
+          'upgradesuspensionwindows',
         ],
         verbs: [
           'create',

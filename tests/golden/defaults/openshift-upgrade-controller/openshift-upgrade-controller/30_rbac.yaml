@@ -12,9 +12,11 @@ rules:
       - managedupgrade.appuio.io
     resources:
       - clusterversions
+      - nodeforcedrains
       - upgradeconfigs
       - upgradejobs
       - upgradejobhooks
+      - upgradesuspensionwindows
     verbs:
       - get
       - list
@@ -33,9 +35,11 @@ rules:
       - managedupgrade.appuio.io
     resources:
       - clusterversions
+      - nodeforcedrains
       - upgradeconfigs
       - upgradejobs
       - upgradejobhooks
+      - upgradesuspensionwindows
     verbs:
       - create
       - delete
