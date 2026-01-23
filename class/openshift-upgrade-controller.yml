@@ -9,6 +9,7 @@ parameters:
           - ${_base_directory}/component/main.jsonnet
           - ${_base_directory}/component/cluster-version.jsonnet
           - ${_base_directory}/component/rbac.jsonnet
+          - ${_base_directory}/component/dynamic-pdb-alerts.jsonnet
         input_type: jsonnet
         output_path: openshift-upgrade-controller/
 
