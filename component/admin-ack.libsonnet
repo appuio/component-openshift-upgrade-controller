@@ -5,6 +5,8 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift_upgrade_controller;
 
+local api = import 'api.libsonnet';
+
 local enabled =
   std.length(params.admin_ack.upgrade_job_selector) > 0;
 
@@ -41,7 +43,7 @@ local cm = kube.ConfigMap(manifestName) + namespace {
   },
 };
 
-local ujh = kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', manifestName) + namespace {
+local ujh = kube._Object(api.apiVersion, 'UpgradeJobHook', manifestName) + namespace {
   spec+: {
     selector: params.admin_ack.upgrade_job_selector,
     events: [

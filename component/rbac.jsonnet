@@ -1,5 +1,7 @@
 local kube = import 'kube-ssa-compat.libsonnet';
 
+local api = import 'api.libsonnet';
+
 local aggregatedRoles = [
   kube.ClusterRole('syn:openshift-upgrade-controller:view') {
     metadata+: {
@@ -11,12 +13,14 @@ local aggregatedRoles = [
     },
     rules: [
       {
-        apiGroups: [ 'managedupgrade.appuio.io' ],
+        apiGroups: [ api.apiGroup ],
         resources: [
           'clusterversions',
+          'nodeforcedrains',
           'upgradeconfigs',
           'upgradejobs',
           'upgradejobhooks',
+          'upgradesuspensionwindows',
         ],
         verbs: [
           'get',
@@ -35,12 +39,14 @@ local aggregatedRoles = [
     },
     rules: [
       {
-        apiGroups: [ 'managedupgrade.appuio.io' ],
+        apiGroups: [ api.apiGroup ],
         resources: [
           'clusterversions',
+          'nodeforcedrains',
           'upgradeconfigs',
           'upgradejobs',
           'upgradejobhooks',
+          'upgradesuspensionwindows',
         ],
         verbs: [
           'create',

@@ -5,6 +5,8 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift_upgrade_controller;
 
+local api = import 'api.libsonnet';
+
 local enabled =
   std.length(params.upgrade_silence.upgrade_job_selector) > 0 &&
   std.length(params.upgrade_silence.alert_matchers) > 0;
@@ -91,7 +93,7 @@ local events = if params.upgrade_silence.handle_delayed_worker_pools then [
   'Finish',
 ];
 
-local ujh = kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', 'maintenance-silence') + namespace {
+local ujh = kube._Object(api.apiVersion, 'UpgradeJobHook', 'maintenance-silence') + namespace {
   spec+: {
     selector: params.upgrade_silence.upgrade_job_selector,
     events: events,

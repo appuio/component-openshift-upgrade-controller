@@ -6,7 +6,9 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift_upgrade_controller;
 
-local clusterVersion = kube._Object('managedupgrade.appuio.io/v1beta1', 'ClusterVersion', 'version') {
+local api = import 'api.libsonnet';
+
+local clusterVersion = kube._Object(api.apiVersion, 'ClusterVersion', 'version') {
   metadata+: {
     namespace: params.namespace,
     labels+: {
