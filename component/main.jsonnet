@@ -6,6 +6,8 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift_upgrade_controller;
 
+local api = import 'api.libsonnet';
+
 local alertlabels = {
   syn: 'true',
   syn_component: 'openshift-upgrade-controller',
@@ -33,7 +35,7 @@ local alerts = function(name, groupName, alerts)
 
 local upgradeConfigs = com.generateResources(
   params.upgrade_configs,
-  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeConfig', name) {
+  function(name) kube._Object(api.apiVersion, 'UpgradeConfig', name) {
     metadata+: {
       namespace: params.namespace,
     },
@@ -42,7 +44,7 @@ local upgradeConfigs = com.generateResources(
 
 local upgradeJobHooks = com.generateResources(
   params.upgrade_job_hooks,
-  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeJobHook', name) {
+  function(name) kube._Object(api.apiVersion, 'UpgradeJobHook', name) {
     metadata+: {
       namespace: params.namespace,
     },
@@ -62,7 +64,7 @@ local upgradeJobHooks = com.generateResources(
 
 local upgradeSuspensionWindows = com.generateResources(
   params.upgrade_suspension_windows,
-  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'UpgradeSuspensionWindow', name) {
+  function(name) kube._Object(api.apiVersion, 'UpgradeSuspensionWindow', name) {
     metadata+: {
       namespace: params.namespace,
     },
@@ -71,7 +73,7 @@ local upgradeSuspensionWindows = com.generateResources(
 
 local nodeForceDrains = com.generateResources(
   params.node_force_drains,
-  function(name) kube._Object('managedupgrade.appuio.io/v1beta1', 'NodeForceDrain', name) {
+  function(name) kube._Object(api.apiVersion, 'NodeForceDrain', name) {
     metadata+: {
       namespace: params.namespace,
     },
