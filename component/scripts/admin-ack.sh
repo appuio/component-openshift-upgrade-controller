@@ -8,7 +8,7 @@ if [ -z "${version}" ]; then
   exit 0
 fi
 
-majorMinor=$(printf "%s" "$version" | cut -d "." -f 1,2)
+majorMinor=$(printf "%s" "$version"  | tr -d '"' | cut -d "." -f 1,2)
 
 ackKey=$(printf "%s" "$OVERRIDES_JSON" | jq -r --arg majorMinor "$majorMinor" '.[$majorMinor] // ""')
 
