@@ -69,6 +69,66 @@ subjects:
     namespace: appuio-openshift-upgrade-controller
 ----
 
+
+== Replace nodes during maintenance
+
+Replaces all nodes labelled with `appuio.io/remove` at the start of the maintenance sequentially.
+Only works on clusters that use machinesets.
+This is useful for example when cloudscale requests to power off certain VMs completely for cold migration.
+With this upgradejobhook we instead simply replace all the affected nodes.
+Only runs once on the next UpgradeJob due to the `.spec.run: Next` setting.
+A clusterrolebinding for cluster-admin for the appuio-openshift-upgrade-controller default serviceaccount is included below.
+
+[source,yaml]
+----
+---
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeJobHook
+metadata:
+  name: replace-nodes
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  events:
+    - Start
+  selector:
+    matchLabels:
+      appuio-managed-upgrade: "true"
+  run: Next
+  template:
+    spec:
+      template:
+        spec:
+          containers:
+            - args:
+                - -c
+                - |
+                  for node in $(kubectl get no -l appuio.io/remove -ojsonpath='{.items[*].metadata.name}')
+                  do
+                    kubectl drain $node --ignore-daemonsets --delete-emptydir-data --force
+                    kubectl -n openshift-machine-api delete machine $node
+                    max_replicas=$(kubectl -n openshift-machine-api get machineset worker -ojsonpath='{.status.replicas}')
+                    kubectl -n openshift-machine-api wait --for=jsonpath='{.status.readyReplicas}'=$max_replicas machineset worker --timeout=900s
+                  done
+              command:
+                - sh
+              image: quay.io/appuio/oc:v4.20
+              name: replace-nodes
+          restartPolicy: Never
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: remove-nodes-upgrade-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: appuio-openshift-upgrade-controller
+----
+
 == Manually rotate the service CA certificate
 
 Force a rotation of the service CA certificate during the maintenance.
