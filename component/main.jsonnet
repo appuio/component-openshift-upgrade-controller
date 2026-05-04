@@ -42,6 +42,23 @@ local upgradeConfigs = com.generateResources(
   },
 );
 
+local upgradeJobHookSA = kube.ServiceAccount('hook-manager') {
+  metadata+: {
+    namespace: params.namespace,
+  },
+};
+
+local upgradeJobHookCRB =
+  kube.ClusterRoleBinding('openshift-upgrade-controller:hook-manager:cluster-admin')
+  {
+    roleRef: {
+      apiVersion: 'rbac.authorization.k8s.io',
+      kind: 'ClusterRole',
+      name: 'cluster-admin',
+    },
+    subjects_: [ upgradeJobHookSA ],
+  };
+
 local upgradeJobHooks = com.generateResources(
   params.upgrade_job_hooks,
   function(name) kube._Object(api.apiVersion, 'UpgradeJobHook', name) {
@@ -53,6 +70,7 @@ local upgradeJobHooks = com.generateResources(
         spec+: {
           template+: {
             spec+: {
+              serviceAccountName: upgradeJobHookSA.metadata.name,
               priorityClassName: 'system-cluster-critical',
             },
           },
@@ -82,6 +100,7 @@ local nodeForceDrains = com.generateResources(
 
 {
   '10_prometheusrule': alerts('openshift-upgrade-controller', 'drain.alerts', params.alerts),
+  '15_upgradejobhook_rbac': [ upgradeJobHookSA, upgradeJobHookCRB ],
   '20_upgradeconfigs': upgradeConfigs,
   '22_upgradejobhooks': upgradeJobHooks,
   '24_upgradesuspensionwindows': upgradeSuspensionWindows,
