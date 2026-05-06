@@ -26,6 +26,16 @@ parameters:
 
     upgrade_configs: {}
 
+    upgrade_job_hook_defaults:
+      spec:
+        template:
+          spec:
+            activeDeadlineSeconds: 900 # 15 minutes
+            template:
+              spec:
+                restartPolicy: Never
+                priorityClassName: system-cluster-critical
+
     upgrade_job_hooks: {}
 
     upgrade_suspension_windows: {}

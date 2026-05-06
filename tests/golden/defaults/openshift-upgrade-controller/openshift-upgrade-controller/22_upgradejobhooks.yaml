@@ -2,6 +2,33 @@ apiVersion: managedupgrade.appuio.io/v1beta1
 kind: UpgradeJobHook
 metadata:
   labels:
+    name: mitigate
+  name: mitigate
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  events:
+    - Start
+  selector:
+    matchLabels:
+      upgradeconfig/name: appuio-monday-afternoon
+  template:
+    spec:
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          containers:
+            - args:
+                - check
+              image: quay.io/appuio/upgrade-mitigate:latest
+              name: mitigate
+          priorityClassName: system-cluster-critical
+          restartPolicy: Never
+          serviceAccountName: hook-manager
+---
+apiVersion: managedupgrade.appuio.io/v1beta1
+kind: UpgradeJobHook
+metadata:
+  labels:
     name: notify
   name: notify
   namespace: appuio-openshift-upgrade-controller
