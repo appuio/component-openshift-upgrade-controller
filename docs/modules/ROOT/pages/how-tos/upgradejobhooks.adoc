@@ -103,9 +103,11 @@ spec:
               name: replace-nodes
           restartPolicy: Never
           serviceAccountName: hook-manager <1>
+          activeDeadlineSeconds: 3600 <2>
 ----
 <1> When deploying the hook through the component parameter `upgrade_job_hooks`, the `serviceAccountName` field can be omitted.
 The component injects `serviceAccountName: hook-manager` for hooks deployed via component parameter `upgrade_job_hooks`.
+<2> Set a higher value to ensure job can finish if you replace many nodes.
 
 == Manually rotate the service CA certificate
 
