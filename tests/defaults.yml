@@ -35,6 +35,22 @@ parameters:
                   timeout: 1h
 
     upgrade_job_hooks:
+      mitigate:
+        spec:
+          events:
+            - Start
+          selector:
+            matchLabels: ${openshift_upgrade_controller:upgrade_configs:appuio-monday-afternoon:spec:jobTemplate:metadata:labels}
+          template:
+            spec:
+              template:
+                spec:
+                  containers:
+                    - name: mitigate
+                      image: quay.io/appuio/upgrade-mitigate:latest
+                      args: [check]
+                  restartPolicy: Never
+
       notify:
         spec:
           events:

@@ -79,6 +79,30 @@ The value is the configuration of the `UpgradeConfig` object.
 
 See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
 
+== upgrade_job_hook_defaults [[upgrade_job_hook_defaults]]
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+upgrade_job_hook_defaults:
+  spec:
+    template:
+      spec:
+        activeDeadlineSeconds: 900 # 15 minutes <1>
+        template:
+          spec:
+            restartPolicy: Never
+            priorityClassName: system-cluster-critical <2>
+----
+<1> Ensures that hooks don't run until the global timeout in case of misconfiguration or issues with the hook job.
+<2> Ensures that hooks are prioritized by the scheduler.
+
+Default values for all `UpgradeJobHook` objects created through the `upgrade_job_hooks` parameter.
+
+Those values can be overridden by setting the corresponding fields in the `upgrade_job_hooks` parameter.
 
 == upgrade_job_hooks
 
@@ -127,7 +151,8 @@ This parameter is used to configure the `UpgradeJobHooks` objects.
 The dictionary key is used as the name of the `UpgradeJobHooks` object.
 The value is the configuration of the `UpgradeJobHooks` object.
 
-`UpgradeJobHooks` default to `priorityClassName: system-cluster-critical`.
+[TIP]
+See the default values in <<upgrade_job_hook_defaults>>.
 
 See https://github.com/appuio/openshift-upgrade-controller for the manifest definition.
 

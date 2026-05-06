@@ -61,7 +61,7 @@ local upgradeJobHookCRB =
 
 local upgradeJobHooks = com.generateResources(
   params.upgrade_job_hooks,
-  function(name) kube._Object(api.apiVersion, 'UpgradeJobHook', name) {
+  function(name) kube._Object(api.apiVersion, 'UpgradeJobHook', name) + com.makeMergeable(params.upgrade_job_hook_defaults) {
     metadata+: {
       namespace: params.namespace,
     },
@@ -71,7 +71,6 @@ local upgradeJobHooks = com.generateResources(
           template+: {
             spec+: {
               serviceAccountName: upgradeJobHookSA.metadata.name,
-              priorityClassName: 'system-cluster-critical',
             },
           },
         },
