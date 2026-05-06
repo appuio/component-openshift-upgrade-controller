@@ -141,6 +141,11 @@ This service account is set as `spec.template.spec.template.serviceAccountName` 
 User-provided values for `spec.template.spec.template.serviceAccountName` take precedence over this default.
 ====
 
+[TIP]
+====
+The component sets `spec.template.spec.template.restartPolicy=Never` for hooks defined through this parameter.
+====
+
 == upgrade_suspension_windows
 
 [horizontal]

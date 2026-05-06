@@ -49,14 +49,14 @@ spec:
                 - mountPath: /export
                   name: export
               workingDir: /export
-          restartPolicy: Never
+          restartPolicy: Never <1>
           serviceAccountName: hook-manager <1>
           volumes:
             - emptyDir: {}
               name: export
 ----
-<1> When deploying the hook through the component parameter `upgrade_job_hooks`, the `serviceAccountName` field can be omitted.
-The component injects `serviceAccountName: hook-manager` for hooks deployed via component parameter `upgrade_job_hooks`.
+<1> When deploying the hook through the component parameter `upgrade_job_hooks`, the `restartPolicy` and `serviceAccountName` fields can be omitted.
+The component injects `serviceAccountName: hook-manager` and `restartPolicy: Never` for hooks deployed via component parameter `upgrade_job_hooks`.
 
 
 == Replace nodes during maintenance
@@ -101,11 +101,11 @@ spec:
                 - sh
               image: quay.io/appuio/oc:v4.20
               name: replace-nodes
-          restartPolicy: Never
+          restartPolicy: Never <1>
           serviceAccountName: hook-manager <1>
 ----
-<1> When deploying the hook through the component parameter `upgrade_job_hooks`, the `serviceAccountName` field can be omitted.
-The component injects `serviceAccountName: hook-manager` for hooks deployed via component parameter `upgrade_job_hooks`.
+<1> When deploying the hook through the component parameter `upgrade_job_hooks`, the `restartPolicy` and `serviceAccountName` fields can be omitted.
+The component injects `serviceAccountName: hook-manager` and `restartPolicy: Never` for hooks deployed via component parameter `upgrade_job_hooks`.
 
 == Manually rotate the service CA certificate
 
@@ -158,11 +158,11 @@ spec:
                 - mountPath: /export
                   name: export
               workingDir: /export
-          restartPolicy: Never
+          restartPolicy: Never <1>
           serviceAccountName: hook-manager <1>
           volumes:
             - emptyDir: {}
               name: export
 ----
-<1> When deploying the hook through the component parameter `upgrade_job_hooks`, the `serviceAccountName` field can be omitted.
-The component injects `serviceAccountName: hook-manager` for hooks deployed via component parameter `upgrade_job_hooks`.
+<1> When deploying the hook through the component parameter `upgrade_job_hooks`, the `restartPolicy` and `serviceAccountName` fields can be omitted.
+The component injects `serviceAccountName: hook-manager` and `restartPolicy: Never` for hooks deployed via component parameter `upgrade_job_hooks`.

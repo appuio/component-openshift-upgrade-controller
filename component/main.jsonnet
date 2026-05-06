@@ -72,6 +72,7 @@ local upgradeJobHooks = com.generateResources(
             spec+: {
               serviceAccountName: upgradeJobHookSA.metadata.name,
               priorityClassName: 'system-cluster-critical',
+              restartPolicy: 'Never',
             },
           },
         },
