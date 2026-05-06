@@ -7,7 +7,6 @@ This is a collection of upgradejobhooks for frequently used one-off tasks.
 Scale down a machineset to remove a node after upgradejob is finished.
 Disables ArgoCD auto-sync for the `root` and `openshift4-nodes` apps.
 Only runs once on the next UpgradeJob due to the `.spec.run: Next` setting.
-A clusterrolebinding for cluster-admin for the appuio-openshift-upgrade-controller default serviceaccount is included below.
 
 [source,yaml]
 ----
@@ -51,22 +50,10 @@ spec:
                   name: export
               workingDir: /export
           restartPolicy: Never
+          serviceAccountName: hook-manager
           volumes:
             - emptyDir: {}
               name: export
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: drain-nodes-upgrade-controller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: default
-    namespace: appuio-openshift-upgrade-controller
 ----
 
 
@@ -77,7 +64,6 @@ Only works on clusters that use machinesets.
 This is useful for example when cloudscale requests to power off certain VMs completely for cold migration.
 With this upgradejobhook we instead simply replace all the affected nodes.
 Only runs once on the next UpgradeJob due to the `.spec.run: Next` setting.
-A clusterrolebinding for cluster-admin for the appuio-openshift-upgrade-controller default serviceaccount is included below.
 
 [source,yaml]
 ----
@@ -114,19 +100,7 @@ spec:
               image: quay.io/appuio/oc:v4.20
               name: replace-nodes
           restartPolicy: Never
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: remove-nodes-upgrade-controller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: default
-    namespace: appuio-openshift-upgrade-controller
+          serviceAccountName: hook-manager
 ----
 
 == Manually rotate the service CA certificate
@@ -135,7 +109,6 @@ Force a rotation of the service CA certificate during the maintenance.
 See the https://docs.openshift.com/container-platform/4.15/security/certificates/service-serving-certificate.html#manually-rotate-service-ca_service-serving-certificate[OpenShift documentation] for details.
 The rotation will be skipped for noop upgradejobs.
 Only runs once on the next UpgradeJob due to the `.spec.run: Next` setting.
-A clusterrolebinding for cluster-admin for the appuio-openshift-upgrade-controller default serviceaccount is included below.
 
 [source,yaml]
 ----
@@ -182,20 +155,8 @@ spec:
                   name: export
               workingDir: /export
           restartPolicy: Never
+          serviceAccountName: hook-manager
           volumes:
             - emptyDir: {}
               name: export
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: rotate-service-ca-cert
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: default
-    namespace: appuio-openshift-upgrade-controller
 ----
