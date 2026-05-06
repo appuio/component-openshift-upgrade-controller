@@ -134,6 +134,12 @@ See https://github.com/appuio/openshift-upgrade-controller for the manifest defi
 [TIP]
 `spec.selector` can be referenced from the `UpgradeConfig` object using Commodore variable expansion.
 
+[TIP]
+====
+The component deploys a service account named `hook-manager` which is granted `cluster-admin`.
+This service account is set as `spec.template.spec.template.serviceAccountName` in each hook defined through this parameter.
+User-provided values for `spec.template.spec.template.serviceAccountName` take precedence over this default.
+====
 
 == upgrade_suspension_windows
 

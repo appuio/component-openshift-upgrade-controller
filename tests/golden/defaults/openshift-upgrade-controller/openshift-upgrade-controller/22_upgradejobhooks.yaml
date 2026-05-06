@@ -36,4 +36,5 @@ spec:
               name: notify
           priorityClassName: system-cluster-critical
           restartPolicy: Never
+          serviceAccountName: hook-manager
       ttlSecondsAfterFinished: 43200
