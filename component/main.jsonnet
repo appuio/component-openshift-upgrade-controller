@@ -52,7 +52,7 @@ local upgradeJobHookCRB =
   kube.ClusterRoleBinding('openshift-upgrade-controller:hook-manager:cluster-admin')
   {
     roleRef: {
-      apiVersion: 'rbac.authorization.k8s.io',
+      apiGroup: 'rbac.authorization.k8s.io',
       kind: 'ClusterRole',
       name: 'cluster-admin',
     },
