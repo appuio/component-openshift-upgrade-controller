@@ -93,12 +93,18 @@ upgrade_job_hook_defaults:
       spec:
         activeDeadlineSeconds: 900 # 15 minutes <1>
         template:
+          metadata:
+            annotations:
+              openshift.io/required-scc: restricted-v2 <2>
           spec:
             restartPolicy: Never
-            priorityClassName: system-cluster-critical <2>
+            priorityClassName: system-cluster-critical <3>
 ----
 <1> Ensures that hooks don't run until the global timeout in case of misconfiguration or issues with the hook job.
-<2> Ensures that hooks are prioritized by the scheduler.
+<2> Ensures that hooks run with SCC `restricted-v2` by default.
+With the recent addition of the `hook-manager` service account which is granted `cluster-admin`, there's a chance that jobs run with arbitrary other SCCs if we don't set this annotation.
+This annotation is also used by OpenShift itself, so it should be safe to rely on this working as intended.
+<3> Ensures that hooks are prioritized by the scheduler.
 
 Default values for all `UpgradeJobHook` objects created through the `upgrade_job_hooks` parameter.
 
