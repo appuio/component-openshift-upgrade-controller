@@ -9,7 +9,7 @@ This alert fires when a upgrade job has failed.
 Machine config pools might still try to apply changes if not paused.
 If the automatic pause on fail is enabled the next maintenance might be blocked.
 
-To clear this alert delete the failed UpgradeJob after investigating the root cause.
+Afer investigation, a failed upgradejob can be excluded from the alert query by creating a configmap with a `ack-` prefix and the name of the upgradejob (see below).
 
 [WARNING]
 ====
@@ -72,6 +72,28 @@ To unpause a Machine Config Pool:
 ----
 POOL=XXX
 kubectl --as=system:admin patch mcp $POOL -p '{"spec":{"paused":false}}' --type=merge
+----
+
+== icon:wrench[] Clear the alert
+
+Afer investigation, a failed upgradejob can be excluded from the alert query by creating a configmap with a `ack-` prefix and the name of the upgradejob.
+Ideally add a short comment explain the root cause for the failure.
+
+[source,shell]
+----
+COMMENT="fixed"
+LATEST_FAILED_JOB=$(
+    kubectl -n appuio-openshift-upgrade-controller get upgradejob \
+    --sort-by .metadata.creationTimestamp -oyaml |\
+    yq '.items[] | select(.status.conditions[].type | contains("Failed")) | .metadata.name' |\
+    tail -n1
+)
+if [[ -n $LATEST_FAILED_JOB ]]; then
+    kubectl --as system:admin -n appuio-openshift-upgrade-controller create configmap\
+    ack-$LATEST_FAILED_JOB --from-literal comment=$COMMENT
+else
+    echo "No failed job found"
+fi
 ----
 
 == icon:wrench[] Tune
