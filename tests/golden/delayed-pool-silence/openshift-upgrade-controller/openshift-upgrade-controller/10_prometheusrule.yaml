@@ -64,6 +64,8 @@ spec:
             summary: Failed UpgradeJob
           expr: |
             openshift_upgrade_controller_upgradejob_state{state="failed"}
+            unless on(upgradejob)
+            (label_replace(kube_configmap_info{namespace="appuio-openshift-upgrade-controller"}, "upgradejob", "$1", "configmap", "ack-(.*)"))
           for: 1m
           labels:
             severity: warning
