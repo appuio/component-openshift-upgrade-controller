@@ -6,6 +6,7 @@ local inv = kap.inventory();
 
 // The hiera parameters for the component
 local params = inv.parameters.openshift_upgrade_controller;
+local hasEspejote = std.member(inv.applications, 'espejote');
 local hasSteward = std.member(inv.applications, 'steward');
 
 local api = import 'api.libsonnet';
@@ -108,5 +109,5 @@ local nodeForceDrains = com.generateResources(
   '26_nodeforcedrains': nodeForceDrains,
   '90_upgrade_silence': import 'silence.libsonnet',
   '90_admin_ack': import 'admin-ack.libsonnet',
-  [if hasSteward then '90_dynamic_facts']: import 'dynamic-facts.libsonnet',
+  [if hasEspejote && hasSteward then '90_dynamic_facts']: import 'dynamic-facts.libsonnet',
 }

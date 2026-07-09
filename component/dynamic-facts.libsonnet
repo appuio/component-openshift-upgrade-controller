@@ -8,15 +8,11 @@ local inv = kap.inventory();
 local params = inv.parameters.openshift_upgrade_controller;
 
 local factsNamespace = inv.parameters.steward.namespace;
-local factsConfigLabel = inv.parameters.steward.additional_facts_config_label;
+local factsConfigLabel = std.get(inv.parameters.steward, 'additional_facts_config_label', '');
 
-local versionOverlay =
-  local sorted = std.sort(params.cluster_version.overlays, function(i) i.from);
-  local last = sorted[std.length(sorted) - 1];
-  {
-    from: std.get(last, 'from', ''),
-    channel: std.get(std.get(std.get(last, 'overlay', {}), 'spec', {}), 'channel', ''),
-  };
+local lastVersionOverlay =
+  local sorted = [ { from: k, spec: params.cluster_version.overlays[k].spec } for k in std.sort(std.objectFields(params.cluster_version.overlays)) ];
+  sorted[std.length(sorted) - 1];
 
 {
   apiVersion: 'v1',
@@ -29,17 +25,15 @@ local versionOverlay =
       'app.kubernetes.io/managed-by': 'commodore',
       'app.kubernetes.io/part-of': 'syn',
       'app.kubernetes.io/component': 'openshift-upgrade-controller',
-      [factsConfigLabel]: '',
+      [if factsConfigLabel != '' then factsConfigLabel]: '',
     },
     name: 'openshift-upgrade-controller-additional-facts',
     namespace: factsNamespace,
   },
   data: {
     facts: std.manifestJson({
-      version_overlay: {
-        from: params.cluster_version.openshiftVersion,
-        channel: params.upgrade_configs,
-      },
+      openshiftVersionOverlayFrom: std.get(lastVersionOverlay, 'from', ''),
+      openshiftVersionOverlayChannel: std.get(std.get(lastVersionOverlay, 'spec', {}), 'channel', ''),
     }),
   },
 }

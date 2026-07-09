@@ -7,7 +7,31 @@ metadata:
   name: version
   namespace: appuio-openshift-upgrade-controller
 spec:
-  overlays: []
+  overlays:
+    - from: '2024-08-26T07:00:00Z'
+      overlay:
+        spec:
+          channel: stable-4.15
+    - from: '2024-12-02T08:00:00Z'
+      overlay:
+        spec:
+          channel: stable-4.16
+    - from: '2025-06-30T08:00:00Z'
+      overlay:
+        spec:
+          channel: stable-4.17
+    - from: '2025-08-11T07:00:00Z'
+      overlay:
+        spec:
+          channel: stable-4.18
+    - from: '2025-11-03T08:00:00Z'
+      overlay:
+        spec:
+          channel: stable-4.19
+    - from: '2026-03-02T08:00:00Z'
+      overlay:
+        spec:
+          channel: stable-4.20
   template:
     spec:
       channel: stable-4.11
