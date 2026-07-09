@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: openshift-upgrade-controller
+    control-plane: controller-manager
+  name: openshift-upgrade-controller-controller-manager-metrics-service
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    control-plane: controller-manager

@@ -1,13 +1,13 @@
 {
   "template": "https://github.com/projectsyn/commodore-component-template.git",
-  "commit": "5ae57721558399419f867334e31d23a7f7a892ba",
+  "commit": "fd5f1a3e9c75f66471f8900cd28a7da6778170f3",
   "checkout": "main",
   "context": {
     "cookiecutter": {
       "name": "openshift-upgrade-controller",
       "slug": "openshift-upgrade-controller",
       "parameter_key": "openshift_upgrade_controller",
-      "test_cases": "defaults delayed-pool-silence",
+      "test_cases": "defaults delayed-pool-silence dynamic-facts",
       "add_lib": "n",
       "add_pp": "n",
       "add_golden": "y",
@@ -25,7 +25,7 @@
       "github_name": "component-openshift-upgrade-controller",
       "github_url": "https://github.com/appuio/component-openshift-upgrade-controller",
       "_template": "https://github.com/projectsyn/commodore-component-template.git",
-      "_commit": "5ae57721558399419f867334e31d23a7f7a892ba"
+      "_commit": "fd5f1a3e9c75f66471f8900cd28a7da6778170f3"
     }
   },
   "directory": null
