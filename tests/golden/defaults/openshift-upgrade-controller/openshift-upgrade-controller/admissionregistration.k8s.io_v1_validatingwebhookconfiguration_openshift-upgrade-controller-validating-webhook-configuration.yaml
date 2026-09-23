@@ -2,7 +2,7 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: openshift-upgrade-controller-system/openshift-upgrade-controller-serving-cert
+    cert-manager.io/inject-ca-from: appuio-openshift-upgrade-controller/openshift-upgrade-controller-serving-cert
   labels:
     app.kubernetes.io/managed-by: commodore
   name: openshift-upgrade-controller-validating-webhook-configuration
