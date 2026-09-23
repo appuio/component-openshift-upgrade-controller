@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/created-by: openshift-upgrade-controller
+    app.kubernetes.io/instance: webhook-service
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: service
+    app.kubernetes.io/part-of: openshift-upgrade-controller
+  name: openshift-upgrade-controller-webhook-service
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: 9443
+  selector:
+    control-plane: controller-manager
