@@ -132,6 +132,57 @@ com.Kustomization(
           },
         ],
       },
+      {
+        source: {
+          kind: 'Service',
+          version: 'v1',
+          name: 'openshift-upgrade-controller-webhook-service',
+          fieldPath: '.metadata.namespace',
+        },
+        targets: [
+          {
+            select: {
+              kind: 'Certificate',
+              group: 'cert-manager.io',
+              version: 'v1',
+              name: 'openshift-upgrade-controller-serving-cert',
+            },
+            fieldPaths: [
+              '.spec.dnsNames.0',
+              '.spec.dnsNames.1',
+            ],
+            options: {
+              delimiter: '.',
+              index: 1,
+              create: true,
+            },
+          },
+        ],
+      },
+      {
+        source: {
+          kind: 'Certificate',
+          group: 'cert-manager.io',
+          version: 'v1',
+          name: 'openshift-upgrade-controller-serving-cert',
+          fieldPath: '.metadata.namespace',
+        },
+        targets: [
+          {
+            select: {
+              kind: 'ValidatingWebhookConfiguration',
+            },
+            fieldPaths: [
+              '.metadata.annotations.[cert-manager.io/inject-ca-from]',
+            ],
+            options: {
+              delimiter: '/',
+              index: 0,
+              create: true,
+            },
+          },
+        ],
+      },
     ],
 
     patches+: [

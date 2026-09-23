@@ -8,8 +8,8 @@ metadata:
   namespace: appuio-openshift-upgrade-controller
 spec:
   dnsNames:
-  - openshift-upgrade-controller-webhook-service.openshift-upgrade-controller-system.svc
-  - openshift-upgrade-controller-webhook-service.openshift-upgrade-controller-system.svc.cluster.local
+  - openshift-upgrade-controller-webhook-service.appuio-openshift-upgrade-controller.svc
+  - openshift-upgrade-controller-webhook-service.appuio-openshift-upgrade-controller.svc.cluster.local
   issuerRef:
     kind: Issuer
     name: openshift-upgrade-controller-selfsigned-issuer
