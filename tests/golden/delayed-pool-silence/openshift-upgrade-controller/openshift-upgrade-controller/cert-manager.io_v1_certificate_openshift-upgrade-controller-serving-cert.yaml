@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: openshift-upgrade-controller
+  name: openshift-upgrade-controller-serving-cert
+  namespace: appuio-openshift-upgrade-controller
+spec:
+  dnsNames:
+  - openshift-upgrade-controller-webhook-service.openshift-upgrade-controller-system.svc
+  - openshift-upgrade-controller-webhook-service.openshift-upgrade-controller-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: openshift-upgrade-controller-selfsigned-issuer
+  secretName: webhook-server-cert
