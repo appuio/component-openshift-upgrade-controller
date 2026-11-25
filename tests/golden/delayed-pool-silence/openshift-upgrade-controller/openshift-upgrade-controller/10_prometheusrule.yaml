@@ -9,6 +9,28 @@ spec:
   groups:
     - name: drain.alerts
       rules:
+        - alert: ClusterNotUpgradeable
+          annotations:
+            description: |
+              The update channel of the cluster is set to minor version {{$labels.minor}},
+              but the cluster cannot upgrade to the minor version of the channel.
+              Check `oc adm upgrade` for more information.
+            message: Cluster does not run minor version {{$labels.minor}} of its update
+              channel.
+            summary: Cluster is not upgradeable
+          expr: |
+            count by (cluster_id, minor) (
+              label_replace(cluster_version_available_updates, "minor", "$1", "channel", ".+-(.+)")
+            )
+            unless on (cluster_id, minor) (
+              label_replace(cluster_version{type="current"}, "minor", "$1", "version", "^(\\d+\\.\\d+)\\..*")
+            )
+          for: 15m
+          labels:
+            Maintenance: 'true'
+            severity: warning
+            syn: 'true'
+            syn_component: openshift-upgrade-controller
         - alert: MaintenanceInProgress
           annotations:
             description: Cluster is currently upgrading
