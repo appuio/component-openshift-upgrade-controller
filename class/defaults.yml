@@ -165,11 +165,16 @@ parameters:
             message: Cluster does not run minor version {{$labels.minor}} of its update channel.
             summary: Cluster is not upgradeable
           expr: |
-            count by (cluster_id, minor) (
-              label_replace(cluster_version_available_updates, "minor", "$1", "channel", ".+-(.+)")
+            (
+              count by (cluster_id, minor) (
+                label_replace(cluster_version_available_updates, "minor", "$1", "channel", ".+-(.+)")
+              )
+              unless on (cluster_id, minor) (
+                label_replace(cluster_version{type="current"}, "minor", "$1", "version", "^(\\d+\\.\\d+)\\..*")
+              )
             )
-            unless on (cluster_id, minor) (
-              label_replace(cluster_version{type="current"}, "minor", "$1", "version", "^(\\d+\\.\\d+)\\..*")
+            and on (cluster_id) (
+              cluster_operator_conditions{name="version", condition="Upgradeable"} == 0
             )
           for: 15m
           labels:
