@@ -154,3 +154,29 @@ parameters:
           for: 1m
           labels:
             severity: warning
+      ClusterNotUpgradeable:
+        enabled: true
+        rule:
+          annotations:
+            description: |
+              The update channel of the cluster is set to minor version {{$labels.minor}},
+              but the cluster cannot upgrade to the minor version of the channel.
+              Check `oc adm upgrade` for more information.
+            message: Cluster does not run minor version {{$labels.minor}} of its update channel.
+            summary: Cluster is not upgradeable
+          expr: |
+            (
+              count by (cluster_id, minor) (
+                label_replace(cluster_version_available_updates, "minor", "$1", "channel", ".+-(.+)")
+              )
+              unless on (cluster_id, minor) (
+                label_replace(cluster_version{type="current"}, "minor", "$1", "version", "^(\\d+\\.\\d+)\\..*")
+              )
+            )
+            and on (cluster_id) (
+              cluster_operator_conditions{name="version", condition="Upgradeable"} == 0
+            )
+          for: 15m
+          labels:
+            severity: warning
+            Maintenance: "true"
